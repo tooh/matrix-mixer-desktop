@@ -9,6 +9,7 @@ import { DocumentationModal } from './DocumentationModal';
 import { ScrumIssueModal } from './ScrumIssueModal';
 import { LoginModal } from './LoginModal';
 import { TrackRenameModal } from './TrackRenameModal';
+import { StageWifiModal } from './StageWifiModal';
 
 declare const __APP_VERSION__: string;
 const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '1.4.5';
@@ -72,6 +73,7 @@ export const App: React.FC = () => {
   const [showDocsModal, setShowDocsModal] = useState<boolean>(false);
   const [showScrumModal, setShowScrumModal] = useState<boolean>(false);
   const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
+  const [showWifiModal, setShowWifiModal] = useState<boolean>(false);
   const [renameTarget, setRenameTarget] = useState<{ def: ChannelDefinition; currentName: string } | null>(null);
   const [toast, setToast] = useState<ToastState | null>(null);
   const toastTimerRef = useRef<any>(null);
@@ -691,6 +693,16 @@ export const App: React.FC = () => {
             <span>🎛️ MIDI (Ch {currentLayerData?.midiChannel})</span>
           </button>
 
+          {/* Stage Wi-Fi Remote & QR Hub */}
+          <button
+            className="btn btn-secondary-action"
+            style={{ borderColor: '#38bdf8', color: '#38bdf8', fontWeight: 600 }}
+            onClick={() => setShowWifiModal(true)}
+            title="Stage Wi-Fi Remote & iPad / iPhone QR Code"
+          >
+            <span>📱 Stage Wi-Fi / QR</span>
+          </button>
+
           {/* Presets */}
           <button className="btn" onClick={() => setShowPresetsModal(true)} title="Mix Scenes & Presets">
             💾 Presets
@@ -793,6 +805,11 @@ export const App: React.FC = () => {
           localStorage.removeItem('matrix_mixer_user');
           setUser(null);
         }}
+      />
+
+      <StageWifiModal
+        isOpen={showWifiModal}
+        onClose={() => setShowWifiModal(false)}
       />
 
       {/* Floating Top-Center Stage HUD Recall & Action Banner */}
