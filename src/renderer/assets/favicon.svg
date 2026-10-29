@@ -1,0 +1,181 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <!-- Background Chassis Gradient -->
+    <radialGradient id="chassisBg" cx="50%" cy="25%" r="80%">
+      <stop offset="0%" stop-color="#1E2333" />
+      <stop offset="50%" stop-color="#10121A" />
+      <stop offset="100%" stop-color="#07080C" />
+    </radialGradient>
+
+    <!-- Console Surface Panel Gradient -->
+    <linearGradient id="panelGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1A1D28" />
+      <stop offset="100%" stop-color="#0E1017" />
+    </linearGradient>
+
+    <!-- Neon Rim Gradient (Matrix Blue / Cyan) -->
+    <linearGradient id="matrixNeon" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="40%" stop-color="#0284C7" />
+      <stop offset="100%" stop-color="#6366F1" />
+    </linearGradient>
+
+    <!-- Fader Track Metallic Slot -->
+    <linearGradient id="slotGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#050608" />
+      <stop offset="50%" stop-color="#12151D" />
+      <stop offset="100%" stop-color="#050608" />
+    </linearGradient>
+
+    <!-- Fader Cap Metallic Texture -->
+    <linearGradient id="faderCapSilver" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#E2E8F0" />
+      <stop offset="40%" stop-color="#94A3B8" />
+      <stop offset="60%" stop-color="#64748B" />
+      <stop offset="100%" stop-color="#334155" />
+    </linearGradient>
+
+    <!-- Glow Filter -->
+    <filter id="neonGlow" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <filter id="intenseGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="14" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Squircle Base / Hardware Chassis -->
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#chassisBg)" stroke="#2B3245" stroke-width="6" />
+
+  <!-- Neon Cyan Matrix Border Highlight -->
+  <rect x="22" y="22" width="468" height="468" rx="106" fill="none" stroke="url(#matrixNeon)" stroke-width="3" stroke-opacity="0.6" filter="url(#neonGlow)" />
+
+  <!-- Console Recessed Faceplate -->
+  <rect x="56" y="56" width="400" height="400" rx="40" fill="url(#panelGrad)" stroke="#1F2433" stroke-width="3" />
+
+  <!-- Top OLED Meter Bridge / Scribble Strip Housing -->
+  <rect x="76" y="76" width="360" height="72" rx="14" fill="#07080D" stroke="#252B3B" stroke-width="2" />
+  
+  <!-- Scribble Strip Display Segments & Matrix Indicators -->
+  <!-- Strip 1 (Drums - Amber) -->
+  <rect x="88" y="86" width="70" height="24" rx="5" fill="#F59E0B" fill-opacity="0.15" stroke="#F59E0B" stroke-opacity="0.6" stroke-width="1.5" />
+  <circle cx="102" cy="98" r="4" fill="#F59E0B" filter="url(#neonGlow)" />
+  <rect x="114" y="94" width="34" height="8" rx="2" fill="#F59E0B" />
+  <!-- VU meters strip 1 -->
+  <rect x="88" y="118" width="8" height="20" rx="2" fill="#10B981" />
+  <rect x="100" y="122" width="8" height="16" rx="2" fill="#10B981" />
+  <rect x="112" y="125" width="8" height="13" rx="2" fill="#10B981" />
+  <rect x="124" y="128" width="8" height="10" rx="2" fill="#10B981" />
+  <rect x="136" y="120" width="8" height="18" rx="2" fill="#F59E0B" />
+  <rect x="148" y="132" width="8" height="6" rx="2" fill="#EF4444" opacity="0.4" />
+
+  <!-- Strip 2 (Bass - Cyan) -->
+  <rect x="174" y="86" width="70" height="24" rx="5" fill="#06B6D4" fill-opacity="0.15" stroke="#06B6D4" stroke-opacity="0.6" stroke-width="1.5" />
+  <circle cx="188" cy="98" r="4" fill="#06B6D4" filter="url(#neonGlow)" />
+  <rect x="200" y="94" width="34" height="8" rx="2" fill="#06B6D4" />
+  <!-- VU meters strip 2 -->
+  <rect x="174" y="118" width="8" height="20" rx="2" fill="#10B981" />
+  <rect x="186" y="116" width="8" height="22" rx="2" fill="#10B981" />
+  <rect x="198" y="118" width="8" height="20" rx="2" fill="#06B6D4" />
+  <rect x="210" y="122" width="8" height="16" rx="2" fill="#06B6D4" />
+  <rect x="222" y="126" width="8" height="12" rx="2" fill="#10B981" />
+  <rect x="234" y="130" width="8" height="8" rx="2" fill="#06B6D4" opacity="0.4" />
+
+  <!-- Strip 3 (Guitar - Green) -->
+  <rect x="260" y="86" width="70" height="24" rx="5" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-opacity="0.6" stroke-width="1.5" />
+  <circle cx="274" cy="98" r="4" fill="#10B981" filter="url(#neonGlow)" />
+  <rect x="286" y="94" width="34" height="8" rx="2" fill="#10B981" />
+  <!-- VU meters strip 3 -->
+  <rect x="260" y="124" width="8" height="14" rx="2" fill="#10B981" />
+  <rect x="272" y="120" width="8" height="18" rx="2" fill="#10B981" />
+  <rect x="284" y="116" width="8" height="22" rx="2" fill="#10B981" />
+  <rect x="296" y="120" width="8" height="18" rx="2" fill="#10B981" />
+  <rect x="308" y="125" width="8" height="13" rx="2" fill="#10B981" />
+  <rect x="320" y="128" width="8" height="10" rx="2" fill="#10B981" opacity="0.4" />
+
+  <!-- Strip 4 (Vocals - Pink) -->
+  <rect x="346" y="86" width="70" height="24" rx="5" fill="#EC4899" fill-opacity="0.15" stroke="#EC4899" stroke-opacity="0.6" stroke-width="1.5" />
+  <circle cx="360" cy="98" r="4" fill="#EC4899" filter="url(#neonGlow)" />
+  <rect x="372" y="94" width="34" height="8" rx="2" fill="#EC4899" />
+  <!-- VU meters strip 4 -->
+  <rect x="346" y="116" width="8" height="22" rx="2" fill="#10B981" />
+  <rect x="358" y="114" width="8" height="24" rx="2" fill="#10B981" />
+  <rect x="370" y="118" width="8" height="20" rx="2" fill="#EC4899" />
+  <rect x="382" y="114" width="8" height="24" rx="2" fill="#EC4899" />
+  <rect x="394" y="122" width="8" height="16" rx="2" fill="#F59E0B" />
+  <rect x="406" y="128" width="8" height="10" rx="2" fill="#EF4444" />
+
+  <!-- Rotary Encoders (Pan Knobs) Section -->
+  <circle cx="123" cy="180" r="16" fill="#161A26" stroke="#333A4D" stroke-width="3" />
+  <line x1="123" y1="180" x2="114" y2="168" stroke="#F59E0B" stroke-width="3.5" stroke-linecap="round" />
+
+  <circle cx="209" cy="180" r="16" fill="#161A26" stroke="#333A4D" stroke-width="3" />
+  <line x1="209" y1="180" x2="209" y2="166" stroke="#06B6D4" stroke-width="3.5" stroke-linecap="round" />
+
+  <circle cx="295" cy="180" r="16" fill="#161A26" stroke="#333A4D" stroke-width="3" />
+  <line x1="295" y1="180" x2="304" y2="168" stroke="#10B981" stroke-width="3.5" stroke-linecap="round" />
+
+  <circle cx="381" cy="180" r="16" fill="#161A26" stroke="#333A4D" stroke-width="3" />
+  <line x1="381" y1="180" x2="381" y2="166" stroke="#EC4899" stroke-width="3.5" stroke-linecap="round" />
+
+  <!-- 4 Professional Vertical Fader Channels -->
+  <!-- Fader 1 Track -->
+  <rect x="117" y="218" width="12" height="180" rx="6" fill="url(#slotGrad)" stroke="#1F2435" stroke-width="2" />
+  <!-- Level Trail (Amber) -->
+  <rect x="121" y="295" width="4" height="100" rx="2" fill="#F59E0B" opacity="0.7" filter="url(#neonGlow)" />
+  <!-- Fader 1 Cap (Positioned at y=280) -->
+  <rect x="99" y="272" width="48" height="28" rx="6" fill="url(#faderCapSilver)" stroke="#0F172A" stroke-width="2" />
+  <rect x="101" y="284" width="44" height="4" rx="2" fill="#F59E0B" filter="url(#intenseGlow)" />
+  <line x1="108" y1="279" x2="138" y2="279" stroke="#CBD5E1" stroke-width="1.5" />
+  <line x1="108" y1="293" x2="138" y2="293" stroke="#475569" stroke-width="1.5" />
+
+  <!-- Fader 2 Track -->
+  <rect x="203" y="218" width="12" height="180" rx="6" fill="url(#slotGrad)" stroke="#1F2435" stroke-width="2" />
+  <!-- Level Trail (Cyan) -->
+  <rect x="207" y="248" width="4" height="147" rx="2" fill="#06B6D4" opacity="0.8" filter="url(#neonGlow)" />
+  <!-- Fader 2 Cap (Positioned high at y=235) -->
+  <rect x="185" y="228" width="48" height="28" rx="6" fill="url(#faderCapSilver)" stroke="#0F172A" stroke-width="2" />
+  <rect x="187" y="240" width="44" height="4" rx="2" fill="#06B6D4" filter="url(#intenseGlow)" />
+  <line x1="194" y1="235" x2="224" y2="235" stroke="#CBD5E1" stroke-width="1.5" />
+  <line x1="194" y1="249" x2="224" y2="249" stroke="#475569" stroke-width="1.5" />
+
+  <!-- Fader 3 Track -->
+  <rect x="289" y="218" width="12" height="180" rx="6" fill="url(#slotGrad)" stroke="#1F2435" stroke-width="2" />
+  <!-- Level Trail (Green) -->
+  <rect x="293" y="325" width="4" height="70" rx="2" fill="#10B981" opacity="0.7" filter="url(#neonGlow)" />
+  <!-- Fader 3 Cap (Positioned lower at y=312) -->
+  <rect x="271" y="305" width="48" height="28" rx="6" fill="url(#faderCapSilver)" stroke="#0F172A" stroke-width="2" />
+  <rect x="273" y="317" width="44" height="4" rx="2" fill="#10B981" filter="url(#intenseGlow)" />
+  <line x1="280" y1="312" x2="310" y2="312" stroke="#CBD5E1" stroke-width="1.5" />
+  <line x1="280" y1="326" x2="310" y2="326" stroke="#475569" stroke-width="1.5" />
+
+  <!-- Fader 4 Track -->
+  <rect x="375" y="218" width="12" height="180" rx="6" fill="url(#slotGrad)" stroke="#1F2435" stroke-width="2" />
+  <!-- Level Trail (Pink) -->
+  <rect x="379" y="235" width="4" height="160" rx="2" fill="#EC4899" opacity="0.8" filter="url(#neonGlow)" />
+  <!-- Fader 4 Cap (Positioned at y=220) -->
+  <rect x="357" y="215" width="48" height="28" rx="6" fill="url(#faderCapSilver)" stroke="#0F172A" stroke-width="2" />
+  <rect x="359" y="227" width="44" height="4" rx="2" fill="#EC4899" filter="url(#intenseGlow)" />
+  <line x1="366" y1="222" x2="396" y2="222" stroke="#CBD5E1" stroke-width="1.5" />
+  <line x1="366" y1="236" x2="396" y2="236" stroke="#475569" stroke-width="1.5" />
+
+  <!-- Bottom Matrix Layer Routing Badges (1/4" • XLR • PHONES) -->
+  <g transform="translate(146, 416)">
+    <!-- 1/4" Out -->
+    <rect x="0" y="0" width="64" height="20" rx="6" fill="#181C2B" stroke="#38BDF8" stroke-width="1.5" />
+    <circle cx="12" cy="10" r="3.5" fill="#38BDF8" filter="url(#neonGlow)" />
+    <text x="22" y="14" fill="#E0F2FE" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9" font-weight="800" letter-spacing="0.5">1/4"</text>
+
+    <!-- XLR Out -->
+    <rect x="76" y="0" width="64" height="20" rx="6" fill="#181C2B" stroke="#0284C7" stroke-width="1.5" />
+    <circle cx="88" cy="10" r="3.5" fill="#0284C7" filter="url(#neonGlow)" />
+    <text x="98" y="14" fill="#E0F2FE" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9" font-weight="800" letter-spacing="0.5">XLR</text>
+
+    <!-- PHONES Out -->
+    <rect x="152" y="0" width="68" height="20" rx="6" fill="#181C2B" stroke="#6366F1" stroke-width="1.5" />
+    <circle cx="164" cy="10" r="3.5" fill="#818CF8" filter="url(#neonGlow)" />
+    <text x="174" y="14" fill="#EEF2FF" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="8.5" font-weight="800" letter-spacing="0.5">HP</text>
+  </g>
+</svg>

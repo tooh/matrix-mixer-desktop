@@ -1,0 +1,98 @@
+[
+  {
+    "timestamp": "2026-10-19T10:08:06.684Z",
+    "action": "PRESET_DELETED",
+    "details": {
+      "id": "preset-1792404431966"
+    }
+  },
+  {
+    "timestamp": "2026-10-19T10:07:48.080Z",
+    "action": "PRESET_CREATED",
+    "details": {
+      "id": "preset-1792404468078",
+      "name": "Still got the blues",
+      "midiPC": 24
+    }
+  },
+  {
+    "timestamp": "2026-10-19T10:07:11.969Z",
+    "action": "PRESET_CREATED",
+    "details": {
+      "id": "preset-1792404431966",
+      "name": "Still24 got the blues",
+      "midiPC": 24
+    }
+  },
+  {
+    "timestamp": "2026-10-18T11:35:02.411Z",
+    "action": "PRESET_UPDATED",
+    "details": {
+      "id": "preset-1792323174738",
+      "name": "No guitar",
+      "midiPC": 0
+    }
+  },
+  {
+    "timestamp": "2026-10-18T11:32:54.741Z",
+    "action": "PRESET_CREATED",
+    "details": {
+      "id": "preset-1792323174738",
+      "name": "No guitar",
+      "midiPC": 0
+    }
+  },
+  {
+    "timestamp": "2026-10-18T07:26:41.769Z",
+    "action": "PRESET_UPDATED",
+    "details": {
+      "id": "preset-1792223192767",
+      "name": "Test",
+      "midiPC": 0
+    }
+  },
+  {
+    "timestamp": "2026-10-17T13:29:09.460Z",
+    "action": "PRESET_UPDATED",
+    "details": {
+      "id": "preset-1792223192767",
+      "name": "Test",
+      "midiPC": 0
+    }
+  },
+  {
+    "timestamp": "2026-10-17T13:22:50.059Z",
+    "action": "PRESET_UPDATED",
+    "details": {
+      "id": "preset-1792223192767",
+      "name": "Test",
+      "midiPC": 0
+    }
+  },
+  {
+    "timestamp": "2026-10-17T12:19:15.537Z",
+    "action": "PRESET_UPDATED",
+    "details": {
+      "id": "preset-1792223192767",
+      "name": "Test",
+      "midiPC": 0
+    }
+  },
+  {
+    "timestamp": "2026-10-17T12:00:26.118Z",
+    "action": "PRESET_TRIGGERED_VIA_PC",
+    "details": {
+      "presetId": "preset-default",
+      "name": "Factory Default (Standard Mix)",
+      "program": 1
+    }
+  },
+  {
+    "timestamp": "2026-10-17T07:46:32.771Z",
+    "action": "PRESET_CREATED",
+    "details": {
+      "id": "preset-1792223192767",
+      "name": "Test"
+    }
+  }
+]

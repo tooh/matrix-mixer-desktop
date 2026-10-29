@@ -1,0 +1,2404 @@
+[
+  {
+    "id": "preset-default",
+    "name": "Factory Default (Standard Mix)",
+    "description": "Line 6 Helix Stadium 1.4 standard level balance and centered panning.",
+    "createdAt": "2026-10-14T16:54:49.199Z",
+    "midiPC": 1,
+    "midiChannel": null,
+    "layers": {
+      "quarter_inch": {
+        "midiChannel": 3,
+        "channels": {
+          "home": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Home (All Paths)",
+            "isUnused": false
+          },
+          "path_1a": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1A",
+            "isUnused": false
+          },
+          "path_1b": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1B",
+            "isUnused": false
+          },
+          "path_1c": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1C",
+            "isUnused": false
+          },
+          "path_1d": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1D",
+            "isUnused": false
+          },
+          "song": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Song (All Tracks)",
+            "isUnused": false
+          },
+          "track_1": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 1 (Drums)",
+            "isUnused": false
+          },
+          "track_2": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 2 (Bass)",
+            "isUnused": false
+          },
+          "track_3": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 3 (Piano)",
+            "isUnused": false
+          },
+          "track_4": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 4 (Guitar)",
+            "isUnused": false
+          },
+          "track_5": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 5 (Other)",
+            "isUnused": false
+          },
+          "track_6": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 6 (Vocals)",
+            "isUnused": false
+          },
+          "track_7": {
+            "level": 105,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 7 (Click)",
+            "isUnused": false
+          },
+          "track_8": {
+            "level": 80,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 8 (Cue)",
+            "isUnused": false
+          },
+          "click": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Click",
+            "isUnused": false
+          },
+          "count_in": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Count In",
+            "isUnused": false
+          },
+          "usb_1_2": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "USB In 1/2",
+            "isUnused": false
+          },
+          "bluetooth": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Bluetooth In",
+            "isUnused": false
+          },
+          "aux_in": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Aux In",
+            "isUnused": false
+          }
+        }
+      },
+      "xlr": {
+        "midiChannel": 4,
+        "channels": {
+          "home": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Home (All Paths)",
+            "isUnused": false
+          },
+          "path_1a": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1A",
+            "isUnused": false
+          },
+          "path_1b": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1B",
+            "isUnused": false
+          },
+          "path_1c": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1C",
+            "isUnused": false
+          },
+          "path_1d": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1D",
+            "isUnused": false
+          },
+          "song": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Song (All Tracks)",
+            "isUnused": false
+          },
+          "track_1": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 1 (Drums)",
+            "isUnused": false
+          },
+          "track_2": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 2 (Bass)",
+            "isUnused": false
+          },
+          "track_3": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 3 (Piano)",
+            "isUnused": false
+          },
+          "track_4": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 4 (Guitar)",
+            "isUnused": false
+          },
+          "track_5": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 5 (Other)",
+            "isUnused": false
+          },
+          "track_6": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 6 (Vocals)",
+            "isUnused": false
+          },
+          "track_7": {
+            "level": 105,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 7 (Click)",
+            "isUnused": false
+          },
+          "track_8": {
+            "level": 80,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 8 (Cue)",
+            "isUnused": false
+          },
+          "click": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Click",
+            "isUnused": false
+          },
+          "count_in": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Count In",
+            "isUnused": false
+          },
+          "usb_1_2": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "USB In 1/2",
+            "isUnused": false
+          },
+          "bluetooth": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Bluetooth In",
+            "isUnused": false
+          },
+          "aux_in": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Aux In",
+            "isUnused": false
+          }
+        }
+      },
+      "phones": {
+        "midiChannel": 5,
+        "channels": {
+          "home": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Home (All Paths)",
+            "isUnused": false
+          },
+          "path_1a": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1A",
+            "isUnused": false
+          },
+          "path_1b": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1B",
+            "isUnused": false
+          },
+          "path_1c": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1C",
+            "isUnused": false
+          },
+          "path_1d": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1D",
+            "isUnused": false
+          },
+          "song": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Song (All Tracks)",
+            "isUnused": false
+          },
+          "track_1": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 1 (Drums)",
+            "isUnused": false
+          },
+          "track_2": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 2 (Bass)",
+            "isUnused": false
+          },
+          "track_3": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 3 (Piano)",
+            "isUnused": false
+          },
+          "track_4": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 4 (Guitar)",
+            "isUnused": false
+          },
+          "track_5": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 5 (Other)",
+            "isUnused": false
+          },
+          "track_6": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 6 (Vocals)",
+            "isUnused": false
+          },
+          "track_7": {
+            "level": 105,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 7 (Click)",
+            "isUnused": false
+          },
+          "track_8": {
+            "level": 80,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 8 (Cue)",
+            "isUnused": false
+          },
+          "click": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Click",
+            "isUnused": false
+          },
+          "count_in": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Count In",
+            "isUnused": false
+          },
+          "usb_1_2": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "USB In 1/2",
+            "isUnused": false
+          },
+          "bluetooth": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Bluetooth In",
+            "isUnused": false
+          },
+          "aux_in": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Aux In",
+            "isUnused": false
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "preset-in-ear",
+    "name": "In-Ear Monitor (Vocal & Band)",
+    "description": "Optimized for in-ear monitors / Phones out with prominent vocals and audible click / count-in.",
+    "createdAt": "2026-10-14T16:54:49.200Z",
+    "midiPC": 2,
+    "midiChannel": null,
+    "layers": {
+      "quarter_inch": {
+        "midiChannel": 3,
+        "channels": {
+          "home": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Home (All Paths)",
+            "isUnused": false
+          },
+          "path_1a": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1A",
+            "isUnused": false
+          },
+          "path_1b": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1B",
+            "isUnused": false
+          },
+          "path_1c": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1C",
+            "isUnused": false
+          },
+          "path_1d": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1D",
+            "isUnused": false
+          },
+          "song": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Song (All Tracks)",
+            "isUnused": false
+          },
+          "track_1": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 1 (Drums)",
+            "isUnused": false
+          },
+          "track_2": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 2 (Bass)",
+            "isUnused": false
+          },
+          "track_3": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 3 (Piano)",
+            "isUnused": false
+          },
+          "track_4": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 4 (Guitar)",
+            "isUnused": false
+          },
+          "track_5": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 5 (Other)",
+            "isUnused": false
+          },
+          "track_6": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 6 (Vocals)",
+            "isUnused": false
+          },
+          "track_7": {
+            "level": 105,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 7 (Click)",
+            "isUnused": false
+          },
+          "track_8": {
+            "level": 80,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 8 (Cue)",
+            "isUnused": false
+          },
+          "click": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Click",
+            "isUnused": false
+          },
+          "count_in": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Count In",
+            "isUnused": false
+          },
+          "usb_1_2": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "USB In 1/2",
+            "isUnused": false
+          },
+          "bluetooth": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Bluetooth In",
+            "isUnused": false
+          },
+          "aux_in": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Aux In",
+            "isUnused": false
+          }
+        }
+      },
+      "xlr": {
+        "midiChannel": 4,
+        "channels": {
+          "home": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Home (All Paths)",
+            "isUnused": false
+          },
+          "path_1a": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1A",
+            "isUnused": false
+          },
+          "path_1b": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1B",
+            "isUnused": false
+          },
+          "path_1c": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1C",
+            "isUnused": false
+          },
+          "path_1d": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1D",
+            "isUnused": false
+          },
+          "song": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Song (All Tracks)",
+            "isUnused": false
+          },
+          "track_1": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 1 (Drums)",
+            "isUnused": false
+          },
+          "track_2": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 2 (Bass)",
+            "isUnused": false
+          },
+          "track_3": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 3 (Piano)",
+            "isUnused": false
+          },
+          "track_4": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 4 (Guitar)",
+            "isUnused": false
+          },
+          "track_5": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 5 (Other)",
+            "isUnused": false
+          },
+          "track_6": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 6 (Vocals)",
+            "isUnused": false
+          },
+          "track_7": {
+            "level": 105,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 7 (Click)",
+            "isUnused": false
+          },
+          "track_8": {
+            "level": 80,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 8 (Cue)",
+            "isUnused": false
+          },
+          "click": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Click",
+            "isUnused": false
+          },
+          "count_in": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Count In",
+            "isUnused": false
+          },
+          "usb_1_2": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "USB In 1/2",
+            "isUnused": false
+          },
+          "bluetooth": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Bluetooth In",
+            "isUnused": false
+          },
+          "aux_in": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Aux In",
+            "isUnused": false
+          }
+        }
+      },
+      "phones": {
+        "midiChannel": 5,
+        "channels": {
+          "home": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Home (All Paths)",
+            "isUnused": false
+          },
+          "path_1a": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1A",
+            "isUnused": false
+          },
+          "path_1b": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1B",
+            "isUnused": false
+          },
+          "path_1c": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1C",
+            "isUnused": false
+          },
+          "path_1d": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1D",
+            "isUnused": false
+          },
+          "song": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Song (All Tracks)",
+            "isUnused": false
+          },
+          "track_1": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 1 (Drums)",
+            "isUnused": false
+          },
+          "track_2": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 2 (Bass)",
+            "isUnused": false
+          },
+          "track_3": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 3 (Piano)",
+            "isUnused": false
+          },
+          "track_4": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 4 (Guitar)",
+            "isUnused": false
+          },
+          "track_5": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 5 (Other)",
+            "isUnused": false
+          },
+          "track_6": {
+            "level": 120,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Vocals (Lead/Band)",
+            "isUnused": false
+          },
+          "track_7": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 7 (Click)"
+          },
+          "track_8": {
+            "level": 80,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 8 (Cue)",
+            "isUnused": false
+          },
+          "click": {
+            "level": 110,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Click (IEM)"
+          },
+          "count_in": {
+            "level": 115,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Count In"
+          },
+          "usb_1_2": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "USB In 1/2",
+            "isUnused": false
+          },
+          "bluetooth": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Bluetooth In",
+            "isUnused": false
+          },
+          "aux_in": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Aux In",
+            "isUnused": false
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "preset-1792223192767",
+    "name": "Test",
+    "description": "Test",
+    "createdAt": "2026-10-17T07:46:32.767Z",
+    "layers": {
+      "quarter_inch": {
+        "midiChannel": 3,
+        "channels": {
+          "home": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Home (All Paths)",
+            "isUnused": false
+          },
+          "path_1a": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1A",
+            "isUnused": false
+          },
+          "path_1b": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1B",
+            "isUnused": false
+          },
+          "path_1c": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1C",
+            "isUnused": false
+          },
+          "path_1d": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1D",
+            "isUnused": false
+          },
+          "song": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Song (All Tracks)",
+            "isUnused": false
+          },
+          "track_1": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 1 (Drums)",
+            "isUnused": false
+          },
+          "track_2": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 2 (Bass)",
+            "isUnused": false
+          },
+          "track_3": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 3 (Piano)",
+            "isUnused": false
+          },
+          "track_4": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 4 (Guitar)",
+            "isUnused": false
+          },
+          "track_5": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 5 (Other)",
+            "isUnused": false
+          },
+          "track_6": {
+            "level": 105,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 6 (Vocals)",
+            "isUnused": false
+          },
+          "track_7": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 7 (Click)",
+            "isUnused": false
+          },
+          "track_8": {
+            "level": 80,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 8 (Cue)",
+            "isUnused": false
+          },
+          "click": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Click",
+            "isUnused": false
+          },
+          "count_in": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Count In",
+            "isUnused": false
+          },
+          "usb_1_2": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "USB In 1/2",
+            "isUnused": false
+          },
+          "bluetooth": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Bluetooth In",
+            "isUnused": false
+          },
+          "aux_in": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Aux In",
+            "isUnused": false
+          }
+        }
+      },
+      "xlr": {
+        "midiChannel": 4,
+        "channels": {
+          "home": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Home (All Paths)",
+            "isUnused": false
+          },
+          "path_1a": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1A",
+            "isUnused": false
+          },
+          "path_1b": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1B",
+            "isUnused": false
+          },
+          "path_1c": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1C",
+            "isUnused": false
+          },
+          "path_1d": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1D",
+            "isUnused": false
+          },
+          "song": {
+            "level": 42,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Song (All Tracks)",
+            "isUnused": false
+          },
+          "track_1": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 1 (Drums)",
+            "isUnused": false
+          },
+          "track_2": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 2 (Bass)",
+            "isUnused": false
+          },
+          "track_3": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 3 (Piano)",
+            "isUnused": false
+          },
+          "track_4": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 4 (Guitar)",
+            "isUnused": false
+          },
+          "track_5": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 5 (Other)",
+            "isUnused": false
+          },
+          "track_6": {
+            "level": 105,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 6 (Vocals)",
+            "isUnused": false
+          },
+          "track_7": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 7 (Click)",
+            "isUnused": false
+          },
+          "track_8": {
+            "level": 80,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 8 (Cue)",
+            "isUnused": false
+          },
+          "click": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Click",
+            "isUnused": false
+          },
+          "count_in": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Count In",
+            "isUnused": false
+          },
+          "usb_1_2": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "USB In 1/2",
+            "isUnused": false
+          },
+          "bluetooth": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Bluetooth In",
+            "isUnused": false
+          },
+          "aux_in": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Aux In",
+            "isUnused": false
+          }
+        }
+      },
+      "phones": {
+        "midiChannel": 5,
+        "channels": {
+          "home": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Home (All Paths)",
+            "isUnused": false
+          },
+          "path_1a": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1A",
+            "isUnused": false
+          },
+          "path_1b": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1B",
+            "isUnused": false
+          },
+          "path_1c": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1C",
+            "isUnused": false
+          },
+          "path_1d": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1D",
+            "isUnused": false
+          },
+          "song": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Song (All Tracks)",
+            "isUnused": false
+          },
+          "track_1": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 1 (Drums)",
+            "isUnused": false
+          },
+          "track_2": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 2 (Bass)",
+            "isUnused": false
+          },
+          "track_3": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 3 (Piano)",
+            "isUnused": false
+          },
+          "track_4": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 4 (Guitar)",
+            "isUnused": false
+          },
+          "track_5": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 5 (Other)",
+            "isUnused": false
+          },
+          "track_6": {
+            "level": 105,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 6 (Vocals)",
+            "isUnused": false
+          },
+          "track_7": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 7 (Click)",
+            "isUnused": false
+          },
+          "track_8": {
+            "level": 80,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 8 (Cue)",
+            "isUnused": false
+          },
+          "click": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Click",
+            "isUnused": false
+          },
+          "count_in": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Count In",
+            "isUnused": false
+          },
+          "usb_1_2": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "USB In 1/2",
+            "isUnused": false
+          },
+          "bluetooth": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Bluetooth In",
+            "isUnused": false
+          },
+          "aux_in": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Aux In",
+            "isUnused": false
+          }
+        }
+      }
+    },
+    "midiPC": 0,
+    "midiChannel": null
+  },
+  {
+    "id": "preset-1792323174738",
+    "name": "No guitar",
+    "description": "",
+    "createdAt": "2026-10-18T11:32:54.738Z",
+    "midiPC": 0,
+    "midiChannel": null,
+    "layers": {
+      "quarter_inch": {
+        "midiChannel": 3,
+        "channels": {
+          "home": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Home (All Paths)",
+            "isUnused": false
+          },
+          "path_1a": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1A",
+            "isUnused": false
+          },
+          "path_1b": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1B",
+            "isUnused": false
+          },
+          "path_1c": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1C",
+            "isUnused": false
+          },
+          "path_1d": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1D",
+            "isUnused": false
+          },
+          "song": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Song (All Tracks)",
+            "isUnused": false
+          },
+          "track_1": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 1 (Drums)",
+            "isUnused": false
+          },
+          "track_2": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 2 (Bass)",
+            "isUnused": false
+          },
+          "track_3": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 3 (Piano)",
+            "isUnused": false
+          },
+          "track_4": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 4 (Guitar)",
+            "isUnused": false
+          },
+          "track_5": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 5 (Other)",
+            "isUnused": false
+          },
+          "track_6": {
+            "level": 105,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 6 (Vocals)",
+            "isUnused": false
+          },
+          "track_7": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 7 (Click)",
+            "isUnused": false
+          },
+          "track_8": {
+            "level": 80,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 8 (Cue)",
+            "isUnused": false
+          },
+          "click": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Click",
+            "isUnused": false
+          },
+          "count_in": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Count In",
+            "isUnused": false
+          },
+          "usb_1_2": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "USB In 1/2",
+            "isUnused": false
+          },
+          "bluetooth": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Bluetooth In",
+            "isUnused": false
+          },
+          "aux_in": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Aux In",
+            "isUnused": false
+          }
+        }
+      },
+      "xlr": {
+        "midiChannel": 4,
+        "channels": {
+          "home": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Home (All Paths)",
+            "isUnused": false
+          },
+          "path_1a": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1A",
+            "isUnused": false
+          },
+          "path_1b": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1B",
+            "isUnused": false
+          },
+          "path_1c": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1C",
+            "isUnused": false
+          },
+          "path_1d": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1D",
+            "isUnused": false
+          },
+          "song": {
+            "level": 96,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Song (All Tracks)",
+            "isUnused": false
+          },
+          "track_1": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 1 (Drums)",
+            "isUnused": false
+          },
+          "track_2": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 2 (Bass)",
+            "isUnused": false
+          },
+          "track_3": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 3 (Piano)",
+            "isUnused": false
+          },
+          "track_4": {
+            "level": 0,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 4 (Guitar)",
+            "isUnused": false
+          },
+          "track_5": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 5 (Other)",
+            "isUnused": false
+          },
+          "track_6": {
+            "level": 105,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 6 (Vocals)",
+            "isUnused": false
+          },
+          "track_7": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 7 (Click)",
+            "isUnused": false
+          },
+          "track_8": {
+            "level": 80,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 8 (Cue)",
+            "isUnused": false
+          },
+          "click": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Click",
+            "isUnused": false
+          },
+          "count_in": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Count In",
+            "isUnused": false
+          },
+          "usb_1_2": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "USB In 1/2",
+            "isUnused": false
+          },
+          "bluetooth": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Bluetooth In",
+            "isUnused": false
+          },
+          "aux_in": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Aux In",
+            "isUnused": false
+          }
+        }
+      },
+      "phones": {
+        "midiChannel": 5,
+        "channels": {
+          "home": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Home (All Paths)",
+            "isUnused": false
+          },
+          "path_1a": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1A",
+            "isUnused": false
+          },
+          "path_1b": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1B",
+            "isUnused": false
+          },
+          "path_1c": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1C",
+            "isUnused": false
+          },
+          "path_1d": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1D",
+            "isUnused": false
+          },
+          "song": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Song (All Tracks)",
+            "isUnused": false
+          },
+          "track_1": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 1 (Drums)",
+            "isUnused": false
+          },
+          "track_2": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 2 (Bass)",
+            "isUnused": false
+          },
+          "track_3": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 3 (Piano)",
+            "isUnused": false
+          },
+          "track_4": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 4 (Guitar)",
+            "isUnused": false
+          },
+          "track_5": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 5 (Other)",
+            "isUnused": false
+          },
+          "track_6": {
+            "level": 105,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 6 (Vocals)",
+            "isUnused": false
+          },
+          "track_7": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 7 (Click)",
+            "isUnused": false
+          },
+          "track_8": {
+            "level": 80,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 8 (Cue)",
+            "isUnused": false
+          },
+          "click": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Click",
+            "isUnused": false
+          },
+          "count_in": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Count In",
+            "isUnused": false
+          },
+          "usb_1_2": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "USB In 1/2",
+            "isUnused": false
+          },
+          "bluetooth": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Bluetooth In",
+            "isUnused": false
+          },
+          "aux_in": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Aux In",
+            "isUnused": false
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "preset-1792404468078",
+    "name": "Still got the blues",
+    "description": "",
+    "createdAt": "2026-10-19T10:07:48.078Z",
+    "midiPC": 24,
+    "midiChannel": null,
+    "layers": {
+      "quarter_inch": {
+        "midiChannel": 3,
+        "channels": {
+          "home": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Home (All Paths)",
+            "isUnused": false
+          },
+          "path_1a": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1A",
+            "isUnused": false
+          },
+          "path_1b": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1B",
+            "isUnused": false
+          },
+          "path_1c": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1C",
+            "isUnused": false
+          },
+          "path_1d": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1D",
+            "isUnused": false
+          },
+          "song": {
+            "level": 96,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Song (All Tracks)",
+            "isUnused": false
+          },
+          "track_1": {
+            "level": 103,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 1 (Drums)",
+            "isUnused": false
+          },
+          "track_2": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 2 (Bass)",
+            "isUnused": false
+          },
+          "track_3": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 3 (Piano)",
+            "isUnused": false
+          },
+          "track_4": {
+            "level": 88,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 4 (Guitar)",
+            "isUnused": false
+          },
+          "track_5": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 5 (Other)",
+            "isUnused": false
+          },
+          "track_6": {
+            "level": 105,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 6 (Vocals)",
+            "isUnused": false
+          },
+          "track_7": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 7 (Click)",
+            "isUnused": false
+          },
+          "track_8": {
+            "level": 80,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 8 (Cue)",
+            "isUnused": false
+          },
+          "click": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Click",
+            "isUnused": false
+          },
+          "count_in": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Count In",
+            "isUnused": false
+          },
+          "usb_1_2": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "USB In 1/2",
+            "isUnused": false
+          },
+          "bluetooth": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Bluetooth In",
+            "isUnused": false
+          },
+          "aux_in": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Aux In",
+            "isUnused": false
+          }
+        }
+      },
+      "xlr": {
+        "midiChannel": 4,
+        "channels": {
+          "home": {
+            "level": 113,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Home (All Paths)",
+            "isUnused": false
+          },
+          "path_1a": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1A",
+            "isUnused": false
+          },
+          "path_1b": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1B",
+            "isUnused": false
+          },
+          "path_1c": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1C",
+            "isUnused": false
+          },
+          "path_1d": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1D",
+            "isUnused": false
+          },
+          "song": {
+            "level": 86,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Song (All Tracks)",
+            "isUnused": false
+          },
+          "track_1": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 1 (Drums)",
+            "isUnused": false
+          },
+          "track_2": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 2 (Bass)",
+            "isUnused": false
+          },
+          "track_3": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 3 (Piano)",
+            "isUnused": false
+          },
+          "track_4": {
+            "level": 51,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 4 (Guitar)",
+            "isUnused": false
+          },
+          "track_5": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 5 (Other)",
+            "isUnused": false
+          },
+          "track_6": {
+            "level": 105,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 6 (Vocals)",
+            "isUnused": false
+          },
+          "track_7": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 7 (Click)",
+            "isUnused": false
+          },
+          "track_8": {
+            "level": 80,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 8 (Cue)",
+            "isUnused": false
+          },
+          "click": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Click",
+            "isUnused": false
+          },
+          "count_in": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Count In",
+            "isUnused": false
+          },
+          "usb_1_2": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "USB In 1/2",
+            "isUnused": false
+          },
+          "bluetooth": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Bluetooth In",
+            "isUnused": false
+          },
+          "aux_in": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Aux In",
+            "isUnused": false
+          }
+        }
+      },
+      "phones": {
+        "midiChannel": 5,
+        "channels": {
+          "home": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Home (All Paths)",
+            "isUnused": false
+          },
+          "path_1a": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1A",
+            "isUnused": false
+          },
+          "path_1b": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1B",
+            "isUnused": false
+          },
+          "path_1c": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1C",
+            "isUnused": false
+          },
+          "path_1d": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Path 1D",
+            "isUnused": false
+          },
+          "song": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Song (All Tracks)",
+            "isUnused": false
+          },
+          "track_1": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 1 (Drums)",
+            "isUnused": false
+          },
+          "track_2": {
+            "level": 95,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 2 (Bass)",
+            "isUnused": false
+          },
+          "track_3": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 3 (Piano)",
+            "isUnused": false
+          },
+          "track_4": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 4 (Guitar)",
+            "isUnused": false
+          },
+          "track_5": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 5 (Other)",
+            "isUnused": false
+          },
+          "track_6": {
+            "level": 105,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 6 (Vocals)",
+            "isUnused": false
+          },
+          "track_7": {
+            "level": 85,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 7 (Click)",
+            "isUnused": false
+          },
+          "track_8": {
+            "level": 80,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Track 8 (Cue)",
+            "isUnused": false
+          },
+          "click": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Click",
+            "isUnused": false
+          },
+          "count_in": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Count In",
+            "isUnused": false
+          },
+          "usb_1_2": {
+            "level": 100,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "USB In 1/2",
+            "isUnused": false
+          },
+          "bluetooth": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Bluetooth In",
+            "isUnused": false
+          },
+          "aux_in": {
+            "level": 90,
+            "pan": 64,
+            "mute": false,
+            "solo": false,
+            "name": "Aux In",
+            "isUnused": false
+          }
+        }
+      }
+    }
+  }
+]
