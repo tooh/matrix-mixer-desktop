@@ -1,6 +1,6 @@
 {
   "name": "matrix-mixer-desktop",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "Helix Stadium 1.4 Matrix Mixer Desktop & Stage Wi-Fi Hub",
   "main": "dist/electron/main.js",
   "scripts": {

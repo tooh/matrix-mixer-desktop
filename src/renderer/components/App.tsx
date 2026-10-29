@@ -12,7 +12,47 @@ import { TrackRenameModal } from './TrackRenameModal';
 import { StageWifiModal } from './StageWifiModal';
 
 declare const __APP_VERSION__: string;
-const APP_VERSION = '1.6.0';
+const APP_VERSION = '1.7.0';
+
+export type ChannelBankId = 'stems' | 'all' | 'paths' | 'aux' | 'vocal' | 'rhythm';
+
+interface BankDefinition {
+  label: string;
+  count: number;
+  channelIds?: string[];
+}
+
+const BANK_DEFINITIONS: Record<ChannelBankId, BankDefinition> = {
+  stems: {
+    label: '🥁 Band Stems',
+    count: 9,
+    channelIds: ['song', 'track_1', 'track_2', 'track_3', 'track_4', 'track_5', 'track_6', 'track_7', 'track_8']
+  },
+  all: {
+    label: '🌐 All',
+    count: 19
+  },
+  paths: {
+    label: '🎸 Helix Paths',
+    count: 5,
+    channelIds: ['home', 'path_1a', 'path_1b', 'path_1c', 'path_1d']
+  },
+  aux: {
+    label: '📱 Inputs & Aux',
+    count: 5,
+    channelIds: ['usb_1_2', 'bluetooth', 'aux_in', 'click', 'count_in']
+  },
+  vocal: {
+    label: '🎤 Vocalist',
+    count: 4,
+    channelIds: ['track_6', 'song', 'track_7', 'track_8']
+  },
+  rhythm: {
+    label: '🥁 Rhythm',
+    count: 5,
+    channelIds: ['track_1', 'track_2', 'track_7', 'track_8', 'song']
+  }
+};
 
 interface ToastState {
   type: 'recall' | 'general';
@@ -66,6 +106,25 @@ export const App: React.FC = () => {
   }, [presets]);
   const [user, setUser] = useState<UserSession | null>(null);
   const [lockedLayer, setLockedLayer] = useState<boolean>(false);
+
+  // Channel Banks & Filter Views (Default: Band Stems)
+  const [activeBank, setActiveBank] = useState<ChannelBankId>(() => {
+    return (localStorage.getItem('matrix_active_bank') as ChannelBankId) || 'stems';
+  });
+  const [hideUnused, setHideUnused] = useState<boolean>(() => {
+    return localStorage.getItem('matrix_hide_unused') === 'true';
+  });
+
+  const handleSelectBank = (bank: ChannelBankId) => {
+    setActiveBank(bank);
+    localStorage.setItem('matrix_active_bank', bank);
+  };
+
+  const handleToggleHideUnused = () => {
+    const next = !hideUnused;
+    setHideUnused(next);
+    localStorage.setItem('matrix_hide_unused', String(next));
+  };
 
   // Modals
   const [showMidiModal, setShowMidiModal] = useState<boolean>(false);
@@ -583,6 +642,21 @@ export const App: React.FC = () => {
     }
   };
 
+  // Filter channels according to active bank and unused toggle
+  const currentChannelsState = layersData[activeLayerId]?.channels || {};
+  const currentBankDef = BANK_DEFINITIONS[activeBank] || BANK_DEFINITIONS.stems;
+
+  const filteredChannels = channels.filter((ch) => {
+    if (currentBankDef.channelIds && !currentBankDef.channelIds.includes(ch.id)) {
+      return false;
+    }
+    if (hideUnused) {
+      const st = currentChannelsState[ch.id];
+      if (st && st.isUnused) return false;
+    }
+    return true;
+  });
+
   return (
     <>
       {/* PWA Version Update Banner */}
@@ -613,21 +687,17 @@ export const App: React.FC = () => {
       <header className="navbar">
         <div className="navbar-top-row">
           <div className="nav-brand">
-            <span className="brand-badge">LINE 6</span>
-            <div className="brand-title">
-              Helix Stadium 1.4 <span className="version-pill">v{APP_VERSION}</span>
-              <span className="brand-subtitle">
-                Matrix Mixer
-                {updateAvailable && (
-                  <button
-                    className="badge-update-available"
-                    onClick={handleForceUpdate}
-                    title={`New version v${updateAvailable} is available! Click to update now.`}
-                  >
-                    ⚡ Update to v{updateAvailable}
-                  </button>
-                )}
-              </span>
+            <div className="brand-title" style={{ fontSize: '18px', fontWeight: 800, display: 'flex', alignItems: 'center' }}>
+              Matrix Mixer <span className="version-pill">v{APP_VERSION}</span>
+              {updateAvailable && (
+                <button
+                  className="badge-update-available"
+                  onClick={handleForceUpdate}
+                  title={`New version v${updateAvailable} is available! Click to update now.`}
+                >
+                  ⚡ Update to v{updateAvailable}
+                </button>
+              )}
             </div>
           </div>
 
@@ -736,9 +806,79 @@ export const App: React.FC = () => {
         </div>
       </header>
 
-      {/* Main Mixer Console with 19 Channels */}
+      {/* Channel Bank & Filter Sub-selection Bar */}
+      <div className="bank-bar">
+        <div className="bank-pills">
+          <button
+            className={`bank-pill ${activeBank === 'stems' ? 'active' : ''}`}
+            onClick={() => handleSelectBank('stems')}
+            title="Band Showcase Stems (Song + Drums, Bass, Piano, Guitar, Other, Vocals, Click, Cue)"
+          >
+            <span>🥁 Band Stems</span>
+            <span className="bank-count">9</span>
+          </button>
+          <button
+            className={`bank-pill ${activeBank === 'all' ? 'active' : ''}`}
+            onClick={() => handleSelectBank('all')}
+            title="Show All 19 Matrix Mixer Channels"
+          >
+            <span>🌐 All</span>
+            <span className="bank-count">19</span>
+          </button>
+          <button
+            className={`bank-pill ${activeBank === 'paths' ? 'active' : ''}`}
+            onClick={() => handleSelectBank('paths')}
+            title="Helix DSP Paths (Home Master + Paths 1A-1D)"
+          >
+            <span>🎸 Helix Paths</span>
+            <span className="bank-count">5</span>
+          </button>
+          <button
+            className={`bank-pill ${activeBank === 'aux' ? 'active' : ''}`}
+            onClick={() => handleSelectBank('aux')}
+            title="Inputs & Utility (USB, Bluetooth, Aux In, Click, Count In)"
+          >
+            <span>📱 Inputs & Aux</span>
+            <span className="bank-count">5</span>
+          </button>
+
+          <span className="bank-divider"></span>
+
+          <button
+            className={`bank-pill ${activeBank === 'vocal' ? 'active' : ''}`}
+            onClick={() => handleSelectBank('vocal')}
+            title="Vocalist In-Ear Mix (Vocals, Band Stems, Click, Cue)"
+          >
+            <span>🎤 Vocalist</span>
+            <span className="bank-count">4</span>
+          </button>
+          <button
+            className={`bank-pill ${activeBank === 'rhythm' ? 'active' : ''}`}
+            onClick={() => handleSelectBank('rhythm')}
+            title="Rhythm Section In-Ear Mix (Drums, Bass, Click, Cue, Band)"
+          >
+            <span>🥁 Rhythm</span>
+            <span className="bank-count">5</span>
+          </button>
+        </div>
+
+        <div className="bank-tools">
+          <button
+            className={`btn-toggle-unused ${hideUnused ? 'active' : ''}`}
+            onClick={handleToggleHideUnused}
+            title="Toggle hiding channels marked as unused"
+          >
+            {hideUnused ? '👁️‍🗨️ Hiding Unused' : '👁️ Hide Unused'}
+          </button>
+          <span className="visible-count-text">
+            {filteredChannels.length} of {channels.length} faders
+          </span>
+        </div>
+      </div>
+
+      {/* Main Mixer Console with Active Bank Channels */}
       <MixerConsole
-        channels={channels}
+        channels={filteredChannels}
         channelStates={currentLayerData?.channels || {}}
         midiChannel={currentLayerData?.midiChannel || 3}
         onUpdateChannel={handleUpdateChannel}
