@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const watch = process.argv.includes('--watch');
-const VERSION = '1.5.0';
+const VERSION = '1.6.0';
 
 function copyFile(src, dest) {
   if (!fs.existsSync(src)) return;

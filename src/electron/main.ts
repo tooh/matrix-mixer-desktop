@@ -67,10 +67,10 @@ async function createWindow() {
   }
 
   mainWindow = new BrowserWindow({
-    width: 1320,
-    height: 840,
-    minWidth: 960,
-    minHeight: 600,
+    width: 1440,
+    height: 900,
+    minWidth: 1024,
+    minHeight: 650,
     title: 'Helix Stadium 1.4 - Matrix Mixer',
     icon: fs.existsSync(iconPath) ? iconPath : undefined,
     backgroundColor: '#0f172a',

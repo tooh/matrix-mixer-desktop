@@ -19,8 +19,17 @@ export const MixerConsole: React.FC<Props> = ({
   onSendMidi,
   onOpenRename
 }) => {
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    // If not holding Shift, convert vertical mouse wheel scroll to horizontal scrolling
+    if (e.deltaY !== 0 && containerRef.current && !e.shiftKey) {
+      containerRef.current.scrollLeft += e.deltaY;
+    }
+  };
+
   return (
-    <div className="mixer-container">
+    <div className="mixer-container" ref={containerRef} onWheel={handleWheel}>
       <div className="mixer-console">
         {channels.map((def) => {
           const state = channelStates[def.id] || {

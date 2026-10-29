@@ -12,7 +12,7 @@ import { TrackRenameModal } from './TrackRenameModal';
 import { StageWifiModal } from './StageWifiModal';
 
 declare const __APP_VERSION__: string;
-const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '1.4.5';
+const APP_VERSION = '1.6.0';
 
 interface ToastState {
   type: 'recall' | 'general';
@@ -615,9 +615,9 @@ export const App: React.FC = () => {
           <div className="nav-brand">
             <span className="brand-badge">LINE 6</span>
             <div className="brand-title">
-              Helix Stadium 1.4
+              Helix Stadium 1.4 <span className="version-pill">v{APP_VERSION}</span>
               <span className="brand-subtitle">
-                Matrix Mixer <span style={{ fontSize: '10px', opacity: 0.6, marginLeft: '4px' }}>v{APP_VERSION}</span>
+                Matrix Mixer
                 {updateAvailable && (
                   <button
                     className="badge-update-available"
