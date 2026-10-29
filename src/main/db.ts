@@ -74,29 +74,60 @@ export interface Preset {
   };
 }
 
-const defaultDataDir = path.resolve(process.cwd(), 'database');
-const dataDir = process.env.APP_DATA_DIR || defaultDataDir;
+export function getDataDir(): string {
+  if (process.env.APP_DATA_DIR) {
+    return process.env.APP_DATA_DIR;
+  }
+  try {
+    const electron = require('electron');
+    const electronApp = electron.app || (electron.remote && electron.remote.app);
+    if (electronApp && typeof electronApp.getPath === 'function') {
+      const dir = path.join(electronApp.getPath('userData'), 'database');
+      process.env.APP_DATA_DIR = dir;
+      return dir;
+    }
+  } catch (e) {}
+
+  return path.resolve(process.cwd(), 'database');
+}
 
 function ensureDir() {
+  const dataDir = getDataDir();
   if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
+    try {
+      fs.mkdirSync(dataDir, { recursive: true });
+    } catch (err) {
+      console.warn(`[DB] Could not create database directory ${dataDir}:`, err);
+    }
   }
   const presetsFile = path.join(dataDir, 'presets.json');
-  const defaultPresetsFile = path.join(defaultDataDir, 'presets.json');
-  if (!fs.existsSync(presetsFile) && fs.existsSync(defaultPresetsFile)) {
-    try {
-      fs.copyFileSync(defaultPresetsFile, presetsFile);
-    } catch (e) {
-      console.warn('Could not copy initial presets.json:', e);
+  if (!fs.existsSync(presetsFile)) {
+    const defaultCandidates = [
+      path.join(__dirname, '../database/presets.json'),
+      path.join(__dirname, 'database/presets.json'),
+      path.resolve(process.cwd(), 'database/presets.json'),
+      path.resolve(process.cwd(), 'dist/database/presets.json')
+    ];
+    for (const cand of defaultCandidates) {
+      if (fs.existsSync(cand)) {
+        try {
+          fs.copyFileSync(cand, presetsFile);
+          break;
+        } catch (e) {
+          console.warn('Could not copy initial presets.json:', e);
+        }
+      }
     }
   }
 }
 
 function readJson<T>(filename: string, defaultValue: T): T {
   ensureDir();
-  const filePath = path.join(dataDir, filename);
+  const filePath = path.join(getDataDir(), filename);
   if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, JSON.stringify(defaultValue, null, 2), 'utf8');
+    try {
+      fs.writeFileSync(filePath, JSON.stringify(defaultValue, null, 2), 'utf8');
+    } catch (e) {}
     return defaultValue;
   }
   try {
@@ -108,8 +139,12 @@ function readJson<T>(filename: string, defaultValue: T): T {
 
 function writeJson<T>(filename: string, data: T) {
   ensureDir();
-  const filePath = path.join(dataDir, filename);
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+  const filePath = path.join(getDataDir(), filename);
+  try {
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+  } catch (e) {
+    console.warn(`[DB] Failed to write ${filename}:`, e);
+  }
 }
 
 export function getDefaultChannelStates(): Record<string, ChannelState> {

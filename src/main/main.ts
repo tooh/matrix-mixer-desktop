@@ -372,7 +372,22 @@ app.get('/api-docs', (_req: Request, res: Response) => {
 });
 
 // 11. Static Renderer Files & SPA Fallback
-const rendererDir = path.resolve(process.cwd(), 'dist/renderer');
+function resolveRendererDir(): string {
+  const candidates = [
+    path.join(__dirname, '../renderer'),
+    path.join(__dirname, 'renderer'),
+    path.resolve(process.cwd(), 'dist/renderer'),
+    path.resolve(process.cwd(), 'src/renderer')
+  ];
+  for (const c of candidates) {
+    if (fs.existsSync(path.join(c, 'index.html'))) {
+      return c;
+    }
+  }
+  return candidates[0];
+}
+
+const rendererDir = resolveRendererDir();
 app.use(express.static(rendererDir));
 
 app.all('/{*splat}', (_req: Request, res: Response) => {

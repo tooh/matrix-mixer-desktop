@@ -1,20 +1,32 @@
 import { app, BrowserWindow, ipcMain, session } from 'electron';
 import path from 'path';
 import fs from 'fs';
+
+process.on('uncaughtException', (err) => {
+  console.error('[Electron] Uncaught Exception:', err);
+});
+process.on('unhandledRejection', (err) => {
+  console.error('[Electron] Unhandled Rejection:', err);
+});
+
+// Configure persistent database directory in user data path
+try {
+  const userDataPath = app.getPath('userData');
+  const databaseDir = path.join(userDataPath, 'database');
+  process.env.APP_DATA_DIR = databaseDir;
+
+  if (!fs.existsSync(databaseDir)) {
+    fs.mkdirSync(databaseDir, { recursive: true });
+  }
+} catch (e) {
+  console.warn('[Electron] Could not setup userData directory:', e);
+}
+
 import { startServer, getLocalIpAddresses } from '../main/main';
 import { ServerMidi } from '../main/serverMidi';
 
 let mainWindow: BrowserWindow | null = null;
 let serverPort = 3005;
-
-// Configure persistent database directory in user data path
-const userDataPath = app.getPath('userData');
-const databaseDir = path.join(userDataPath, 'database');
-process.env.APP_DATA_DIR = databaseDir;
-
-if (!fs.existsSync(databaseDir)) {
-  fs.mkdirSync(databaseDir, { recursive: true });
-}
 
 async function createWindow() {
   // 1. Start embedded Express server for Wi-Fi clients (iPads / smartphones)
