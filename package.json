@@ -36,15 +36,20 @@
     "appId": "com.helix.matrixmixer",
     "productName": "Helix Matrix Mixer",
     "directories": {
-      "output": "release"
+      "output": "release",
+      "buildResources": "build"
     },
+    "afterPack": "scripts/afterPack.js",
     "mac": {
       "category": "public.app-category.music",
+      "icon": "build/icon.icns",
       "target": [
         "dmg"
-      ]
+      ],
+      "identity": null
     },
     "win": {
+      "icon": "build/icon.png",
       "target": [
         "nsis"
       ],

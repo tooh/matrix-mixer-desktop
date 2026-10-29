@@ -47,6 +47,13 @@ function copyAssets() {
   copyFile('src/renderer/icon.png', 'dist/renderer/icon.png');
   copyDir('src/renderer/assets', 'dist/renderer/assets');
 
+  // Ensure build resources directory exists for electron-builder with icons
+  if (!fs.existsSync('build')) {
+    fs.mkdirSync('build', { recursive: true });
+  }
+  copyFile('src/renderer/assets/app.icns', 'build/icon.icns');
+  copyFile('src/renderer/icon.png', 'build/icon.png');
+
   // Also make sure dist/database has presets for initial seeding
   copyDir('database', 'dist/database');
 

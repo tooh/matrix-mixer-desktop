@@ -49,12 +49,18 @@ async function createWindow() {
   });
 
   // 4. Create Main App Window
+  const iconPath = path.join(__dirname, '../renderer/icon.png');
+  if (process.platform === 'darwin' && app.dock && fs.existsSync(iconPath)) {
+    app.dock.setIcon(iconPath);
+  }
+
   mainWindow = new BrowserWindow({
     width: 1320,
     height: 840,
     minWidth: 960,
     minHeight: 600,
     title: 'Helix Stadium 1.4 - Matrix Mixer',
+    icon: fs.existsSync(iconPath) ? iconPath : undefined,
     backgroundColor: '#0f172a',
     autoHideMenuBar: true,
     webPreferences: {
