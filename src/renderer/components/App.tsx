@@ -695,8 +695,7 @@ export const App: React.FC = () => {
 
           {/* Stage Wi-Fi Remote & QR Hub */}
           <button
-            className="btn btn-secondary-action"
-            style={{ borderColor: '#38bdf8', color: '#38bdf8', fontWeight: 600 }}
+            className="btn btn-wifi"
             onClick={() => setShowWifiModal(true)}
             title="Stage Wi-Fi Remote & iPad / iPhone QR Code"
           >

@@ -83,6 +83,12 @@ async function createWindow() {
     }
   });
 
+  // Ensure freshest UI is always loaded in desktop Electron
+  try {
+    await session.defaultSession.clearCache();
+    await session.defaultSession.clearStorageData({ storages: ['serviceworkers', 'cachestorage'] });
+  } catch (e) {}
+
   // Load local mixer UI
   const targetUrl = `http://localhost:${serverPort}`;
   console.log(`[Electron] Loading UI at ${targetUrl}`);

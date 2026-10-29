@@ -15,7 +15,7 @@ dotenv.config();
 const execFileAsync = promisify(execFile);
 const app = express();
 const PORT = process.env.PORT || 3005;
-const VERSION = '1.4.5';
+const VERSION = '1.5.0';
 
 app.use(cors());
 app.use(express.json());
