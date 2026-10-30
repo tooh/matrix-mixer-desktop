@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const watch = process.argv.includes('--watch');
-const VERSION = '1.7.0';
+const VERSION = '1.8.1';
 
 function copyFile(src, dest) {
   if (!fs.existsSync(src)) return;
@@ -44,6 +44,7 @@ function copyAssets() {
 
   copyFile('src/renderer/styles.css', 'dist/renderer/styles.css');
   copyFile('src/renderer/manifest.json', 'dist/renderer/manifest.json');
+  copyFile('src/renderer/sw.js', 'dist/renderer/sw.js');
   copyFile('src/renderer/icon.png', 'dist/renderer/icon.png');
   copyDir('src/renderer/assets', 'dist/renderer/assets');
 

@@ -71,6 +71,8 @@ async function createWindow() {
     height: 900,
     minWidth: 1024,
     minHeight: 650,
+    fullscreen: true,
+    fullscreenable: true,
     title: 'Helix Stadium 1.4 - Matrix Mixer',
     icon: fs.existsSync(iconPath) ? iconPath : undefined,
     backgroundColor: '#0f172a',
@@ -82,6 +84,9 @@ async function createWindow() {
       sandbox: false
     }
   });
+
+  mainWindow.maximize();
+  mainWindow.setFullScreen(true);
 
   // Ensure freshest UI is always loaded in desktop Electron
   try {

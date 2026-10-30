@@ -3,6 +3,7 @@ import { ChannelDefinition, LayerConfig, LayerState, Preset, UserSession } from 
 import { apiRequest } from '../api';
 import { MIDI } from '../midiService';
 import { MixerConsole } from './MixerConsole';
+import { levelToDb } from './ChannelStrip';
 import { MidiSettingsModal } from './MidiSettingsModal';
 import { PresetsModal } from './PresetsModal';
 import { DocumentationModal } from './DocumentationModal';
@@ -12,7 +13,7 @@ import { TrackRenameModal } from './TrackRenameModal';
 import { StageWifiModal } from './StageWifiModal';
 
 declare const __APP_VERSION__: string;
-const APP_VERSION = '1.7.0';
+const APP_VERSION = '1.8.1';
 
 export type ChannelBankId = 'stems' | 'all' | 'paths' | 'aux' | 'vocal' | 'rhythm';
 
@@ -114,6 +115,27 @@ export const App: React.FC = () => {
   const [hideUnused, setHideUnused] = useState<boolean>(() => {
     return localStorage.getItem('matrix_hide_unused') === 'true';
   });
+
+  // Custom channel default levels (default is 100 / 0.0 dB if not customized)
+  const [channelDefaults, setChannelDefaults] = useState<Record<string, number>>(() => {
+    try {
+      const saved = localStorage.getItem('matrix_channel_defaults');
+      return saved ? JSON.parse(saved) : {};
+    } catch (e) {
+      return {};
+    }
+  });
+
+  const handleSetChannelDefault = (channelId: string, level: number) => {
+    setChannelDefaults((prev) => {
+      const next = { ...prev, [channelId]: level };
+      localStorage.setItem('matrix_channel_defaults', JSON.stringify(next));
+      return next;
+    });
+    const chDef = channels.find((c) => c.id === channelId);
+    const chName = layersData[activeLayerId]?.channels[channelId]?.name || chDef?.name || channelId;
+    triggerToast(`📍 Default fader voor "${chName}" ingesteld op ${levelToDb(level)}`);
+  };
 
   const handleSelectBank = (bank: ChannelBankId) => {
     setActiveBank(bank);
@@ -881,9 +903,12 @@ export const App: React.FC = () => {
         channels={filteredChannels}
         channelStates={currentLayerData?.channels || {}}
         midiChannel={currentLayerData?.midiChannel || 3}
+        isAllView={activeBank === 'all'}
+        channelDefaults={channelDefaults}
         onUpdateChannel={handleUpdateChannel}
         onSendMidi={handleSendMidi}
         onOpenRename={handleOpenRename}
+        onSetChannelDefault={handleSetChannelDefault}
       />
 
       {/* Interactive Track Rename & Showcase Stems Modal */}
@@ -891,9 +916,12 @@ export const App: React.FC = () => {
         isOpen={!!renameTarget}
         channel={renameTarget ? renameTarget.def : null}
         currentName={renameTarget ? renameTarget.currentName : ''}
+        currentLevel={renameTarget ? (currentChannelsState[renameTarget.def.id]?.level ?? 100) : 100}
+        channelDefaultLevel={renameTarget ? (channelDefaults[renameTarget.def.id] ?? 100) : 100}
         onClose={() => setRenameTarget(null)}
         onSave={handleSaveRename}
         onApplyShowcaseAll={handleApplyShowcaseStems}
+        onSetDefaultLevel={handleSetChannelDefault}
       />
 
       {/* Modals */}

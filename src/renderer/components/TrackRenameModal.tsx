@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { ChannelDefinition } from '../types';
+import { levelToDb } from './ChannelStrip';
 
 interface Props {
   isOpen: boolean;
   channel: ChannelDefinition | null;
   currentName: string;
+  currentLevel?: number;
+  channelDefaultLevel?: number;
   onClose: () => void;
   onSave: (channelId: string, newName: string, allLayers: boolean) => void;
   onApplyShowcaseAll: () => void;
+  onSetDefaultLevel?: (channelId: string, level: number) => void;
 }
 
 const QUICK_STEMS = [
@@ -25,18 +29,23 @@ export const TrackRenameModal: React.FC<Props> = ({
   isOpen,
   channel,
   currentName,
+  currentLevel = 100,
+  channelDefaultLevel = 100,
   onClose,
   onSave,
-  onApplyShowcaseAll
+  onApplyShowcaseAll,
+  onSetDefaultLevel
 }) => {
   const [name, setName] = useState('');
   const [allLayers, setAllLayers] = useState(true);
+  const [localDefaultLevel, setLocalDefaultLevel] = useState<number>(channelDefaultLevel);
 
   useEffect(() => {
     if (channel) {
       setName(currentName || channel.name);
+      setLocalDefaultLevel(channelDefaultLevel);
     }
-  }, [channel, currentName, isOpen]);
+  }, [channel, currentName, channelDefaultLevel, isOpen]);
 
   if (!isOpen || !channel) return null;
 
@@ -47,6 +56,13 @@ export const TrackRenameModal: React.FC<Props> = ({
       setName(`Track ${trkNum} (${stemLabel})`);
     } else {
       setName(stemLabel);
+    }
+  };
+
+  const handleApplyDefault = (level: number) => {
+    setLocalDefaultLevel(level);
+    if (onSetDefaultLevel) {
+      onSetDefaultLevel(channel.id, level);
     }
   };
 
@@ -155,6 +171,46 @@ export const TrackRenameModal: React.FC<Props> = ({
               >
                 ⚡ Apply Showcase Layout to Tracks 1-8
               </button>
+            </div>
+
+            {/* Channel Default Fader Position (Uitgangspositie) */}
+            <div style={{ background: '#0b1120', padding: '12px 14px', borderRadius: '8px', border: '1px solid #1e293b' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  🎯 Fader Uitgangspositie (Default Reset)
+                </span>
+                <span style={{ fontSize: '12px', fontWeight: 800, color: '#38bdf8' }}>
+                  {levelToDb(localDefaultLevel)} (CC {localDefaultLevel})
+                </span>
+              </div>
+              <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '10px' }}>
+                Wanneer je dubbelklikt op de fader of op het dB-vakje klikt, springt het kanaal direct naar deze waarde.
+                {currentLevel !== localDefaultLevel && (
+                  <span style={{ display: 'block', color: '#f59e0b', marginTop: '2px' }}>
+                    Huidige faderstand staat nu op {levelToDb(currentLevel)}.
+                  </span>
+                )}
+              </div>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary-action"
+                  style={{ fontSize: '11px', padding: '5px 10px', borderColor: '#3b82f6', color: '#93c5fd' }}
+                  onClick={() => handleApplyDefault(currentLevel)}
+                  title="Stel de huidige faderstand in als default uitgangspositie voor dit kanaal"
+                >
+                  📍 Huidige stand ({levelToDb(currentLevel)}) als default
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary-action"
+                  style={{ fontSize: '11px', padding: '5px 10px', borderColor: '#475569' }}
+                  onClick={() => handleApplyDefault(100)}
+                  title="Herstel default naar 0.0 dB"
+                >
+                  🔄 Reset naar 0.0 dB
+                </button>
+              </div>
             </div>
 
             {/* Modal Actions */}

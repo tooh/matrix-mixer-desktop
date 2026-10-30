@@ -5,9 +5,12 @@ interface Props {
   def: ChannelDefinition;
   state: ChannelState;
   midiChannel: number;
+  isCompact?: boolean;
+  channelDefaultLevel?: number;
   onUpdate: (updates: Partial<ChannelState>) => void;
   onSendMidi: (cc: number, value: number, desc?: string) => void;
   onOpenRename?: (def: ChannelDefinition, currentName: string) => void;
+  onSetDefaultLevel?: (level: number) => void;
 }
 
 function parseChannelDisplay(rawName: string, id: string, category: string) {
@@ -104,7 +107,7 @@ function getChannelAccent(id: string, name: string, category: string): { color: 
   return { color: '#38bdf8', border: '#2563eb' };
 }
 
-function levelToDb(val: number): string {
+export function levelToDb(val: number): string {
   if (val === 0) return '-∞ dB';
   // Map 100 to 0dB, 127 to +6dB, 1 to -48dB
   if (val === 100) return '0.0 dB';
@@ -132,19 +135,34 @@ export const ChannelStrip: React.FC<Props> = ({
   def,
   state,
   midiChannel,
+  isCompact,
+  channelDefaultLevel,
   onUpdate,
   onSendMidi,
-  onOpenRename
+  onOpenRename,
+  onSetDefaultLevel
 }) => {
   const isUnused = state.isUnused ?? false;
   const currentFullName = state.name || def.name;
   const display = parseChannelDisplay(currentFullName, def.id, def.category);
   const accent = getChannelAccent(def.id, currentFullName, def.category);
+  const defaultLvl = channelDefaultLevel ?? 100;
 
   const handleLevelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = parseInt(e.target.value, 10);
     onUpdate({ level: val });
     onSendMidi(def.levelCC, val, `${currentFullName} Level: ${val} (${levelToDb(val)})`);
+  };
+
+  const handleResetLevel = () => {
+    onUpdate({ level: defaultLvl });
+    onSendMidi(def.levelCC, defaultLvl, `${currentFullName} Level: Reset to ${levelToDb(defaultLvl)}`);
+  };
+
+  const handleSetCurrentAsDefault = () => {
+    if (onSetDefaultLevel) {
+      onSetDefaultLevel(state.level);
+    }
   };
 
   const handlePanChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -193,12 +211,12 @@ export const ChannelStrip: React.FC<Props> = ({
   };
 
   return (
-    <div className={`channel-strip ${isUnused ? 'unused' : ''} ${state.solo ? 'is-soloed' : ''} ${state.mute ? 'is-muted' : ''}`}>
+    <div className={`channel-strip ${isUnused ? 'unused' : ''} ${state.solo ? 'is-soloed' : ''} ${state.mute ? 'is-muted' : ''} ${isCompact ? 'compact' : ''}`}>
       {/* High-Visibility Console Scribble Strip (Digital Console OLED Display) */}
       <div
         className="scribble-strip"
         onClick={handleScribbleClick}
-        title={`Click to rename channel: ${currentFullName}`}
+        title={`Click to rename channel / configure default level: ${currentFullName}`}
         style={{ '--accent-color': accent.color, '--accent-border': accent.border } as React.CSSProperties}
       >
         <div className="scribble-top-bar" style={{ backgroundColor: accent.border }} />
@@ -259,9 +277,15 @@ export const ChannelStrip: React.FC<Props> = ({
 
       {/* Fader Area */}
       <div className="strip-fader-area">
-        <div className="fader-track-ticks">
+        <div className="fader-track-ticks" onDoubleClick={handleResetLevel}>
           <span>+6</span>
-          <span>0</span>
+          <span
+            className="tick-zero"
+            onClick={handleResetLevel}
+            title={`Click to reset to ${levelToDb(defaultLvl)}`}
+          >
+            0
+          </span>
           <span>-6</span>
           <span>-18</span>
           <span>-∞</span>
@@ -272,14 +296,32 @@ export const ChannelStrip: React.FC<Props> = ({
           max="127"
           value={state.level}
           onChange={handleLevelChange}
+          onDoubleClick={handleResetLevel}
           className="fader-vertical"
-          title={`Level: ${state.level} (${levelToDb(state.level)})`}
+          title={`Level: ${state.level} (${levelToDb(state.level)})\nDouble-click to reset to ${levelToDb(defaultLvl)}`}
         />
       </div>
 
       {/* Footer dB readout & Unused toggle */}
       <div className="strip-footer">
-        <div className="level-db-box">{levelToDb(state.level)}</div>
+        <div
+          className="level-db-box"
+          onClick={(e) => {
+            if (e.shiftKey) {
+              handleSetCurrentAsDefault();
+            } else {
+              handleResetLevel();
+            }
+          }}
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+            handleResetLevel();
+          }}
+          title={`Level: ${state.level} (${levelToDb(state.level)})\n• Click to reset to default (${levelToDb(defaultLvl)})\n• Shift+Click to save current level as default`}
+        >
+          <span className="db-value-text">{levelToDb(state.level)}</span>
+          <span className="db-reset-hint">↺</span>
+        </div>
         <button
           className="unused-toggle-btn"
           onClick={handleToggleUnused}

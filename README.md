@@ -10,7 +10,7 @@ Runs directly on **macOS** and **Windows** without requiring an external MySQL s
 
 Both builds are generated in `release/`:
 
-* 🍏 **macOS:** [`Helix Matrix Mixer-1.5.0-arm64.dmg`](release/Helix Matrix Mixer-1.5.0-arm64.dmg)  
+* 🍏 **macOS:** [`Helix Matrix Mixer-1.8.1-arm64.dmg`](release/Helix Matrix Mixer-1.8.1-arm64.dmg)  
   *Open and drag to Applications, or run directly.*
 * 🪟 **Windows Portable:** [`Helix-Matrix-Mixer-1.5.0-Windows-Portable.zip`](release/Helix-Matrix-Mixer-1.5.0-Windows-Portable.zip)  
   *Extract to any folder or USB stick and run `Helix Matrix Mixer.exe`. No installation required.*
