@@ -118,8 +118,17 @@ export const App: React.FC = () => {
   const [user, setUser] = useState<UserSession | null>(null);
   const [lockedLayer, setLockedLayer] = useState<boolean>(false);
 
-  // Channel Banks & Filter Views (Default: Band Stems)
+  // Channel Banks & Filter Views (Default per role or Band Stems)
   const [activeBank, setActiveBank] = useState<ChannelBankId>(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const b = params.get('bank') as ChannelBankId;
+      if (b && BANK_DEFINITIONS[b]) return b;
+      const r = params.get('role');
+      if (r === 'band' || r === 'iem') return 'vocal';
+      if (r === 'operator' || r === 'foh') return 'stems';
+      if (r === 'admin') return 'all';
+    }
     return (localStorage.getItem('matrix_active_bank') as ChannelBankId) || 'stems';
   });
   const [hideUnused, setHideUnused] = useState<boolean>(() => {
@@ -464,12 +473,17 @@ export const App: React.FC = () => {
   const isBandMember = user?.role === 'BAND_MEMBER';
   const isGuest = !user;
 
-  // Auto-switch to Phones layer when user is BAND_MEMBER
+  // Auto-switch to Phones layer and In-Ear bank when user is BAND_MEMBER
   useEffect(() => {
-    if (user?.role === 'BAND_MEMBER' && activeLayerId !== 'phones') {
-      setActiveLayerId('phones');
+    if (user?.role === 'BAND_MEMBER') {
+      if (activeLayerId !== 'phones') {
+        setActiveLayerId('phones');
+      }
+      if (activeBank !== 'vocal' && activeBank !== 'rhythm') {
+        setActiveBank('vocal');
+      }
     }
-  }, [user?.role, activeLayerId]);
+  }, [user?.role, activeLayerId, activeBank]);
 
   // Send MIDI CC
   const handleSendMidi = useCallback((cc: number, value: number, desc?: string) => {

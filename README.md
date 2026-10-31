@@ -47,20 +47,20 @@ Both builds are generated in `release/`:
 
 The application enforces 3 roles across both client UI and server API endpoints:
 
-### 1. ⚡ Administrator (`ADMIN`)
-Full administrative access across all 3 matrix layers (1/4" Line, XLR, Phones), preset management (including deletion), server USB CoreMIDI device switching, and system settings.
+### 1. ⚡ Administrator (`ADMIN`) — 19-Fader Engineering Overview
+Full system overview showing all 19 matrix channels (Home Master, DSP Paths 1A-1D, Song, Tracks 1-8, Click, Count-In, and External Inputs) across all 3 layers.
 
-![System Administrator](docs/screenshots/role-1-admin.png?raw=true&v=1.9.0)
+![System Administrator Fader View](docs/screenshots/role-1-admin.png?raw=true&v=1.9.0-faders)
 
-### 2. 🎛️ FOH Sound Engineer (`OPERATOR`)
-Full real-time audio operator control across all 3 layers: faders, pan, mute, solo, and preset recall & creation. Hardware USB remapping and preset deletion are protected.
+### 2. 🎛️ FOH Sound Engineer (`OPERATOR`) — 9-Fader Live Band Stems View
+FOH console focused on the 9 band stems (Song Master, Drums, Bass, Piano, Guitar, Other, Vocals, Click, Cue) mapped to Matrix XLR Out for live audience mixing.
 
-![FOH Sound Engineer](docs/screenshots/role-2-operator.png?raw=true&v=1.9.0)
+![FOH Sound Engineer Fader View](docs/screenshots/role-2-operator.png?raw=true&v=1.9.0-faders)
 
-### 3. 🎧 Band Member (`BAND_MEMBER`)
-Stage safety mode: automatically locked into the **Phones Out** (In-Ear Monitor) layer. Other matrix layers (1/4" & XLR) and preset management are locked to prevent accidental interference with FOH sound.
+### 3. 🎧 Band Member (`BAND_MEMBER`) — 4-Fader In-Ear Monitor (IEM) View
+Stage safety mode: automatically restricted to personal In-Ear monitor channels (Vocals, Song, Click, Cue) on Matrix Phones Out. The 1/4" Line and XLR Out tabs are locked to protect front-of-house sound.
 
-![Band Member (IEM)](docs/screenshots/role-3-band-member.png?raw=true&v=1.9.0)
+![Band Member IEM Fader View](docs/screenshots/role-3-band-member.png?raw=true&v=1.9.0-faders)
 
 ---
 

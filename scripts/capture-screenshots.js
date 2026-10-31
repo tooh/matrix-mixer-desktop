@@ -9,17 +9,17 @@ const PORT = 3999;
 const targets = {
   admin: {
     role: 'ADMIN',
-    url: `http://localhost:${PORT}/?role=admin&modal=auth`,
+    url: `http://localhost:${PORT}/?role=admin&layer=quarter_inch&bank=all`,
     filename: 'role-1-admin.png'
   },
   operator: {
     role: 'OPERATOR',
-    url: `http://localhost:${PORT}/?role=operator`,
+    url: `http://localhost:${PORT}/?role=operator&layer=xlr&bank=stems`,
     filename: 'role-2-operator.png'
   },
   band: {
     role: 'BAND_MEMBER',
-    url: `http://localhost:${PORT}/?role=band`,
+    url: `http://localhost:${PORT}/?role=band&layer=phones&bank=vocal`,
     filename: 'role-3-band-member.png'
   }
 };
