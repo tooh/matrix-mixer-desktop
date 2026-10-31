@@ -13,6 +13,8 @@ interface Props {
   onUpdateRecallScope?: (scope: 'active_layer' | 'all_layers') => void;
   activeLayerName?: string;
   onOverwritePreset?: (preset: Preset) => void;
+  canManagePresets?: boolean;
+  canDeletePresets?: boolean;
 }
 
 export const PresetsModal: React.FC<Props> = ({
@@ -26,7 +28,9 @@ export const PresetsModal: React.FC<Props> = ({
   recallScope = 'active_layer',
   onUpdateRecallScope,
   activeLayerName = 'Current Layer',
-  onOverwritePreset
+  onOverwritePreset,
+  canManagePresets = true,
+  canDeletePresets = true
 }) => {
   const [newPresetName, setNewPresetName] = useState('');
   const [newPresetDesc, setNewPresetDesc] = useState('');
@@ -308,7 +312,7 @@ export const PresetsModal: React.FC<Props> = ({
                       >
                         Load
                       </button>
-                      {onOverwritePreset && (
+                      {canManagePresets && onOverwritePreset && (
                         <button
                           className="btn"
                           style={{
@@ -328,21 +332,26 @@ export const PresetsModal: React.FC<Props> = ({
                           💾 Overwrite
                         </button>
                       )}
-                      <button
-                        className="btn"
-                        style={{ padding: '3px 8px', fontSize: '11px', color: '#38bdf8' }}
-                        onClick={() => startEdit(p)}
-                        title="Edit preset name, description, or MIDI PC trigger"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="btn"
-                        style={{ padding: '3px 8px', fontSize: '11px', color: '#ef4444' }}
-                        onClick={() => onDeletePreset(p.id)}
-                      >
-                        Delete
-                      </button>
+                      {canManagePresets && (
+                        <button
+                          className="btn"
+                          style={{ padding: '3px 8px', fontSize: '11px', color: '#38bdf8' }}
+                          onClick={() => startEdit(p)}
+                          title="Edit preset name, description, or MIDI PC trigger"
+                        >
+                          Edit
+                        </button>
+                      )}
+                      {canDeletePresets && (
+                        <button
+                          className="btn"
+                          style={{ padding: '3px 8px', fontSize: '11px', color: '#ef4444' }}
+                          onClick={() => onDeletePreset(p.id)}
+                          title="Delete preset (Administrator only)"
+                        >
+                          Delete
+                        </button>
+                      )}
                     </div>
                   </div>
                 );
@@ -351,62 +360,86 @@ export const PresetsModal: React.FC<Props> = ({
           </div>
 
           {/* Save Current Mix */}
-          <form onSubmit={handleSave} style={{ borderTop: '1px solid #27354f', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <h4 style={{ fontSize: '13px', color: '#38bdf8', margin: 0 }}>Save Current Mix as New Preset</h4>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <div className="form-group" style={{ flex: 1 }}>
-                <label className="form-label">Preset Name:</label>
+          {canManagePresets ? (
+            <form onSubmit={handleSave} style={{ borderTop: '1px solid #27354f', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <h4 style={{ fontSize: '13px', color: '#38bdf8', margin: 0 }}>Save Current Mix as New Preset</h4>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label className="form-label">Preset Name:</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="e.g. Showcase Song 1 (Intro/Chorus)"
+                    value={newPresetName}
+                    onChange={(e) => setNewPresetName(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="form-group" style={{ width: '130px' }}>
+                  <label className="form-label" title="Helix Stadium Program Change (0-127)">MIDI PC Trigger:</label>
+                  <input
+                    type="number"
+                    className="form-input"
+                    min="0"
+                    max="127"
+                    placeholder="e.g. 5 (Optional)"
+                    value={newPresetPC}
+                    onChange={(e) => setNewPresetPC(e.target.value)}
+                  />
+                </div>
+                <div className="form-group" style={{ width: '130px' }}>
+                  <label className="form-label">MIDI Channel:</label>
+                  <select
+                    className="form-select"
+                    value={newPresetChannel}
+                    onChange={(e) => setNewPresetChannel(e.target.value)}
+                  >
+                    <option value="omni">Omni (Any)</option>
+                    {Array.from({ length: 16 }, (_, i) => i + 1).map((ch) => (
+                      <option key={ch} value={ch}>Ch {ch}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Description / Notes:</label>
                 <input
                   type="text"
                   className="form-input"
-                  placeholder="e.g. Showcase Song 1 (Intro/Chorus)"
-                  value={newPresetName}
-                  onChange={(e) => setNewPresetName(e.target.value)}
-                  required
+                  placeholder="e.g. Vocals & Click boosted for In-Ears; FOH drums leveled"
+                  value={newPresetDesc}
+                  onChange={(e) => setNewPresetDesc(e.target.value)}
                 />
               </div>
-              <div className="form-group" style={{ width: '130px' }}>
-                <label className="form-label" title="Helix Stadium Program Change (0-127)">MIDI PC Trigger:</label>
-                <input
-                  type="number"
-                  className="form-input"
-                  min="0"
-                  max="127"
-                  placeholder="e.g. 5 (Optional)"
-                  value={newPresetPC}
-                  onChange={(e) => setNewPresetPC(e.target.value)}
-                />
-              </div>
-              <div className="form-group" style={{ width: '130px' }}>
-                <label className="form-label">MIDI Channel:</label>
-                <select
-                  className="form-select"
-                  value={newPresetChannel}
-                  onChange={(e) => setNewPresetChannel(e.target.value)}
-                >
-                  <option value="omni">Omni (Any)</option>
-                  {Array.from({ length: 16 }, (_, i) => i + 1).map((ch) => (
-                    <option key={ch} value={ch}>Ch {ch}</option>
-                  ))}
-                </select>
+
+              <button type="submit" className="btn btn-primary" style={{ alignSelf: 'flex-start', marginTop: '4px' }}>
+                💾 Save Mix Scene
+              </button>
+            </form>
+          ) : (
+            <div style={{
+              borderTop: '1px solid #27354f',
+              paddingTop: '16px',
+              paddingBottom: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              color: '#94a3b8',
+              fontSize: '12px',
+              background: 'rgba(15, 23, 42, 0.4)',
+              borderRadius: '6px',
+              padding: '12px'
+            }}>
+              <span style={{ fontSize: '18px' }}>🔒</span>
+              <div>
+                <strong style={{ color: '#cbd5e1' }}>Preset Creation & Deletion Restricted</strong>
+                <p style={{ margin: '2px 0 0 0', color: '#64748b' }}>
+                  Saving new presets or editing requires an <strong>OPERATOR</strong> or <strong>ADMIN</strong> role. Deleting presets is restricted to <strong>ADMIN</strong>.
+                </p>
               </div>
             </div>
-
-            <div className="form-group">
-              <label className="form-label">Description / Notes:</label>
-              <input
-                type="text"
-                className="form-input"
-                placeholder="e.g. Vocals & Click boosted for In-Ears; FOH drums leveled"
-                value={newPresetDesc}
-                onChange={(e) => setNewPresetDesc(e.target.value)}
-              />
-            </div>
-
-            <button type="submit" className="btn btn-primary" style={{ alignSelf: 'flex-start', marginTop: '4px' }}>
-              💾 Save Mix Scene
-            </button>
-          </form>
+          )}
         </div>
 
         <div className="modal-footer">

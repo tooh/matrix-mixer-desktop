@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { MIDI } from '../midiService';
 import { MidiPortInfo, MidiMessageEvent } from '../types';
+import { apiRequest } from '../api';
 
 interface Props {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface Props {
   recallScope?: 'active_layer' | 'all_layers';
   onUpdateRecallScope?: (scope: 'active_layer' | 'all_layers') => void;
   activeLayerName?: string;
+  isAdmin?: boolean;
 }
 
 export const MidiSettingsModal: React.FC<Props> = ({
@@ -19,7 +21,8 @@ export const MidiSettingsModal: React.FC<Props> = ({
   onUpdateChannels,
   recallScope = 'active_layer',
   onUpdateRecallScope,
-  activeLayerName = 'Current Layer'
+  activeLayerName = 'Current Layer',
+  isAdmin = false
 }) => {
   const [inputs, setInputs] = useState<MidiPortInfo[]>([]);
   const [outputs, setOutputs] = useState<MidiPortInfo[]>([]);
@@ -32,8 +35,7 @@ export const MidiSettingsModal: React.FC<Props> = ({
   const [activeServerDev, setActiveServerDev] = useState<string>('');
 
   const loadServerDevices = () => {
-    fetch('/api/midi/devices')
-      .then(r => r.json())
+    apiRequest<{ devices: string[]; activeDevice?: string }>('/api/midi/devices')
       .then(d => {
         if (d.devices) setServerDevices(d.devices);
         if (d.activeDevice) setActiveServerDev(d.activeDevice);
@@ -62,13 +64,17 @@ export const MidiSettingsModal: React.FC<Props> = ({
 
   if (!isOpen) return null;
 
-  const handleSelectServerDev = (dev: string) => {
+  const handleSelectServerDev = async (dev: string) => {
+    if (!isAdmin) return;
     setActiveServerDev(dev);
-    fetch('/api/midi/device', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ device: dev })
-    });
+    try {
+      await apiRequest('/api/midi/device', {
+        method: 'POST',
+        body: JSON.stringify({ device: dev })
+      });
+    } catch (e) {
+      console.warn('Failed to set server MIDI device:', e);
+    }
   };
 
   const handleSelectIn = (id: string) => {
@@ -95,6 +101,13 @@ export const MidiSettingsModal: React.FC<Props> = ({
         </div>
 
         <div className="modal-body">
+          {!isAdmin && (
+            <div style={{ background: '#451a03', border: '1px solid #d97706', color: '#fde68a', padding: '10px 14px', borderRadius: '8px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+              <span>🔒</span>
+              <span><strong>Read-Only Mode:</strong> Hardware USB device selection and MIDI output channels require Administrator permissions.</span>
+            </div>
+          )}
+
           {/* Server-Side USB MIDI (Mac -> Helix Stadium for iPhone / iPad support) */}
           <div style={{ background: '#090d16', padding: '12px', borderRadius: '8px', border: '1px solid #10b981' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
@@ -121,7 +134,8 @@ export const MidiSettingsModal: React.FC<Props> = ({
             <div className="form-group">
               <select
                 className="form-select"
-                style={{ borderColor: '#10b981' }}
+                style={{ borderColor: '#10b981', opacity: isAdmin ? 1 : 0.65, cursor: isAdmin ? 'pointer' : 'not-allowed' }}
+                disabled={!isAdmin}
                 value={activeServerDev}
                 onChange={(e) => handleSelectServerDev(e.target.value)}
               >
@@ -186,6 +200,8 @@ export const MidiSettingsModal: React.FC<Props> = ({
                 <label className="form-label">Matrix &gt; 1/4" Out:</label>
                 <select
                   className="form-select"
+                  disabled={!isAdmin}
+                  style={{ opacity: isAdmin ? 1 : 0.65, cursor: isAdmin ? 'pointer' : 'not-allowed' }}
                   value={midiChannels.quarter_inch}
                   onChange={(e) => onUpdateChannels({ ...midiChannels, quarter_inch: parseInt(e.target.value, 10) })}
                 >
@@ -199,6 +215,8 @@ export const MidiSettingsModal: React.FC<Props> = ({
                 <label className="form-label">Matrix &gt; XLR Out:</label>
                 <select
                   className="form-select"
+                  disabled={!isAdmin}
+                  style={{ opacity: isAdmin ? 1 : 0.65, cursor: isAdmin ? 'pointer' : 'not-allowed' }}
                   value={midiChannels.xlr}
                   onChange={(e) => onUpdateChannels({ ...midiChannels, xlr: parseInt(e.target.value, 10) })}
                 >
@@ -212,6 +230,8 @@ export const MidiSettingsModal: React.FC<Props> = ({
                 <label className="form-label">Matrix &gt; Phones Out:</label>
                 <select
                   className="form-select"
+                  disabled={!isAdmin}
+                  style={{ opacity: isAdmin ? 1 : 0.65, cursor: isAdmin ? 'pointer' : 'not-allowed' }}
                   value={midiChannels.phones}
                   onChange={(e) => onUpdateChannels({ ...midiChannels, phones: parseInt(e.target.value, 10) })}
                 >

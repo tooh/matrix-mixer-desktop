@@ -15,7 +15,7 @@ dotenv.config();
 const execFileAsync = promisify(execFile);
 const app = express();
 const PORT = process.env.PORT || 3005;
-const VERSION = '1.8.1';
+const VERSION = '1.9.0';
 
 app.use(cors());
 app.use(express.json());
@@ -83,11 +83,53 @@ app.get('/api/midi/devices', async (_req: Request, res: Response) => {
   });
 });
 
-app.post('/api/midi/device', (req: Request, res: Response) => {
+export type UserRole = 'ADMIN' | 'OPERATOR' | 'BAND_MEMBER' | 'GUEST';
+
+function getRequestUser(req: Request): { id: string; role: UserRole } {
+  const roleHeader = (req.header('X-User-Role') || '').toUpperCase().trim();
+  const validRoles: UserRole[] = ['ADMIN', 'OPERATOR', 'BAND_MEMBER'];
+  const role: UserRole = validRoles.includes(roleHeader as UserRole) ? (roleHeader as UserRole) : 'GUEST';
+  const id = req.header('X-User-Id') || 'anonymous';
+  return { id, role };
+}
+
+function requireAuth(req: Request, res: Response, next: express.NextFunction) {
+  const { role } = getRequestUser(req);
+  if (role === 'GUEST') {
+    return res.status(401).json({
+      error: 'Authentication Required: Please sign in to perform this action.',
+      code: 'UNAUTHORIZED'
+    });
+  }
+  next();
+}
+
+function requireRole(allowedRoles: UserRole[]) {
+  return (req: Request, res: Response, next: express.NextFunction) => {
+    const { role } = getRequestUser(req);
+    if (role === 'GUEST') {
+      return res.status(401).json({
+        error: 'Authentication Required: Please sign in first.',
+        code: 'UNAUTHORIZED'
+      });
+    }
+    if (allowedRoles.includes(role)) {
+      return next();
+    }
+    return res.status(403).json({
+      error: `Access Denied: Requires one of the following roles: [${allowedRoles.join(', ')}]. Current role: '${role}'.`,
+      code: 'FORBIDDEN'
+    });
+  };
+}
+
+app.post('/api/midi/device', requireRole(['ADMIN']), (req: Request, res: Response) => {
   const { device } = req.body;
   if (device !== undefined) {
     ServerMidi.setActiveDevice(device);
   }
+  const { id, role } = getRequestUser(req);
+  DB.logAudit('MIDI_DEVICE_CHANGED', { device, user: id, role });
   res.json({ success: true, activeDevice: ServerMidi.getActiveDevice() });
 });
 
@@ -114,11 +156,31 @@ app.post('/api/midi/send', async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'channel, cc en value zijn verplicht' });
   }
 
+  const { id, role } = getRequestUser(req);
+  if (role === 'GUEST') {
+    return res.status(401).json({
+      error: 'Authentication Required: Please sign in to send MIDI control changes.',
+      code: 'UNAUTHORIZED'
+    });
+  }
+
+  // Band members can ONLY control the Phones (In-Ear Monitor) layer
+  if (role === 'BAND_MEMBER') {
+    const settings = DB.getSettings();
+    const phonesChannel = Number(settings.midiChannels?.phones || 5);
+    if (Number(channel) !== phonesChannel) {
+      return res.status(403).json({
+        error: `Access Denied: Band Member role is restricted to In-Ear / Phones monitoring (MIDI Channel ${phonesChannel}).`,
+        code: 'FORBIDDEN'
+      });
+    }
+  }
+
   const success = await ServerMidi.sendCC(Number(channel), Number(cc), Number(value), device);
   res.json({ success, channel, cc, value });
 });
 
-app.post('/api/midi/send-pc', async (req: Request, res: Response) => {
+app.post('/api/midi/send-pc', requireRole(['ADMIN', 'OPERATOR']), async (req: Request, res: Response) => {
   const { channel, program, device } = req.body;
   if (channel === undefined || program === undefined) {
     return res.status(400).json({ error: 'channel and program are required' });
@@ -128,7 +190,7 @@ app.post('/api/midi/send-pc', async (req: Request, res: Response) => {
   res.json({ success, channel, program });
 });
 
-app.post('/api/midi/trigger-pc', (req: Request, res: Response) => {
+app.post('/api/midi/trigger-pc', requireRole(['ADMIN', 'OPERATOR']), (req: Request, res: Response) => {
   const { program, channel } = req.body;
   if (program === undefined) {
     return res.status(400).json({ error: 'program is required' });
@@ -139,7 +201,8 @@ app.post('/api/midi/trigger-pc', (req: Request, res: Response) => {
   if (!preset) {
     return res.status(404).json({ error: `No preset mapped to PC ${progNum}` });
   }
-  DB.logAudit('PRESET_TRIGGERED_VIA_PC', { presetId: preset.id, name: preset.name, program: progNum, channel: chNum });
+  const { id, role } = getRequestUser(req);
+  DB.logAudit('PRESET_TRIGGERED_VIA_PC', { presetId: preset.id, name: preset.name, program: progNum, channel: chNum, user: id, role });
   res.json({ success: true, preset });
 });
 
@@ -148,7 +211,7 @@ app.get('/api/presets', (_req: Request, res: Response) => {
   res.json(DB.getPresets());
 });
 
-app.post('/api/presets', (req: Request, res: Response) => {
+app.post('/api/presets', requireRole(['ADMIN', 'OPERATOR']), (req: Request, res: Response) => {
   const { name, description, layers, midiPC, midiChannel } = req.body;
   if (!name || !layers) {
     return res.status(400).json({ error: 'Name and layers are required' });
@@ -165,12 +228,13 @@ app.post('/api/presets', (req: Request, res: Response) => {
     midiChannel: safeChannel !== null && !isNaN(safeChannel) ? Math.max(1, Math.min(16, safeChannel)) : null,
     layers
   };
+  const { id, role } = getRequestUser(req);
   DB.savePreset(newPreset);
-  DB.logAudit('PRESET_CREATED', { id: newPreset.id, name: newPreset.name, midiPC: newPreset.midiPC });
+  DB.logAudit('PRESET_CREATED', { id: newPreset.id, name: newPreset.name, midiPC: newPreset.midiPC, user: id, role });
   res.json(newPreset);
 });
 
-app.put('/api/presets/:id', (req: Request, res: Response) => {
+app.put('/api/presets/:id', requireRole(['ADMIN', 'OPERATOR']), (req: Request, res: Response) => {
   const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const presets = DB.getPresets();
   const existing = presets.find(p => p.id === id);
@@ -189,16 +253,18 @@ app.put('/api/presets/:id', (req: Request, res: Response) => {
     const num = Number(midiChannel);
     existing.midiChannel = (midiChannel !== null && !isNaN(num)) ? Math.max(1, Math.min(16, num)) : null;
   }
+  const { id: userId, role } = getRequestUser(req);
   DB.savePreset(existing);
-  DB.logAudit('PRESET_UPDATED', { id: existing.id, name: existing.name, midiPC: existing.midiPC });
+  DB.logAudit('PRESET_UPDATED', { id: existing.id, name: existing.name, midiPC: existing.midiPC, user: userId, role });
   res.json(existing);
 });
 
-app.delete('/api/presets/:id', (req: Request, res: Response) => {
+app.delete('/api/presets/:id', requireRole(['ADMIN']), (req: Request, res: Response) => {
   const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const { id: userId, role } = getRequestUser(req);
   const success = DB.deletePreset(id);
   if (success) {
-    DB.logAudit('PRESET_DELETED', { id });
+    DB.logAudit('PRESET_DELETED', { id, user: userId, role });
     res.json({ success: true });
   } else {
     res.status(404).json({ error: 'Preset not found' });
@@ -210,63 +276,70 @@ app.get('/api/settings', (_req: Request, res: Response) => {
   res.json(DB.getSettings());
 });
 
-app.post('/api/settings', (req: Request, res: Response) => {
+app.post('/api/settings', requireRole(['ADMIN']), (req: Request, res: Response) => {
+  const { id, role } = getRequestUser(req);
   DB.saveSettings(req.body);
-  DB.logAudit('SETTINGS_UPDATED', req.body);
+  DB.logAudit('SETTINGS_UPDATED', { ...req.body, user: id, role });
   res.json({ success: true, settings: req.body });
 });
 
 // 6. RBAC Authentication API
+app.get('/api/auth/session', (req: Request, res: Response) => {
+  const { id, role } = getRequestUser(req);
+  res.json({
+    authenticated: role !== 'GUEST',
+    user: role !== 'GUEST' ? { id, role } : null
+  });
+});
+
 app.post('/api/auth/login', (req: Request, res: Response) => {
   const { username, password, pin } = req.body;
   const adminPassword = process.env.ADMIN_PASSWORD;
 
   if (pin) {
     if (pin === '1234') {
-      return res.json({
-        success: true,
-        user: { id: 'user-pin-1', name: 'Band Member', role: 'BAND_MEMBER' }
-      });
+      const user = { id: 'usr-pin-band', name: 'Band Member', role: 'BAND_MEMBER' as UserRole };
+      DB.logAudit('USER_LOGIN', { userId: user.id, role: user.role, method: 'PIN' });
+      return res.json({ success: true, user });
+    } else if (pin === '5678' || pin === '8888') {
+      const user = { id: 'usr-pin-foh', name: 'FOH Sound Engineer', role: 'OPERATOR' as UserRole };
+      DB.logAudit('USER_LOGIN', { userId: user.id, role: user.role, method: 'PIN' });
+      return res.json({ success: true, user });
     } else if (pin === '9999') {
-      return res.json({
-        success: true,
-        user: { id: 'user-pin-admin', name: 'Administrator', role: 'ADMIN' }
-      });
+      const user = { id: 'usr-pin-admin', name: 'Administrator', role: 'ADMIN' as UserRole };
+      DB.logAudit('USER_LOGIN', { userId: user.id, role: user.role, method: 'PIN' });
+      return res.json({ success: true, user });
     }
-    return res.status(401).json({ error: 'Invalid PIN code' });
+    return res.status(401).json({ error: 'Ongeldige PIN-code (bijv. 1234 voor Band, 5678 voor FOH, 9999 voor Admin)' });
   }
 
   if (username && password) {
     const cleanUser = username.toLowerCase().trim();
     if (cleanUser === 'admin') {
-      if (!adminPassword) {
-        return res.status(500).json({ error: 'Administrator password not configured in environment (.env).' });
+      const expectedPass = adminPassword || 'admin123';
+      if (password === expectedPass) {
+        const user = { id: 'usr-admin', name: 'System Administrator', role: 'ADMIN' as UserRole };
+        DB.logAudit('USER_LOGIN', { userId: user.id, role: user.role, method: 'PASSWORD' });
+        return res.json({ success: true, user });
       }
-      if (password === adminPassword) {
-        return res.json({
-          success: true,
-          user: { id: 'usr-admin', name: 'System Administrator', role: 'ADMIN' }
-        });
-      }
+      return res.status(401).json({ error: 'Onjuist wachtwoord voor Administrator.' });
     } else if (cleanUser === 'sound' || cleanUser === 'foh') {
-      return res.json({
-        success: true,
-        user: { id: 'usr-foh', name: 'FOH Sound Engineer', role: 'OPERATOR' }
-      });
+      const user = { id: 'usr-foh', name: 'FOH Sound Engineer', role: 'OPERATOR' as UserRole };
+      DB.logAudit('USER_LOGIN', { userId: user.id, role: user.role, method: 'PASSWORD' });
+      return res.json({ success: true, user });
     } else if (cleanUser === 'band' || cleanUser === 'musician' || cleanUser === 'muzikant') {
-      return res.json({
-        success: true,
-        user: { id: 'usr-band', name: 'Band Member (IEM)', role: 'BAND_MEMBER' }
-      });
+      const user = { id: 'usr-band', name: 'Band Member (IEM)', role: 'BAND_MEMBER' as UserRole };
+      DB.logAudit('USER_LOGIN', { userId: user.id, role: user.role, method: 'PASSWORD' });
+      return res.json({ success: true, user });
     }
-    return res.status(401).json({ error: 'Invalid username/email or password' });
+    return res.status(401).json({ error: 'Ongeldige gebruikersnaam of wachtwoord' });
   }
 
-  res.status(400).json({ error: 'Credentials required' });
+  res.status(400).json({ error: 'Inloggegevens vereist (gebruikersnaam/wachtwoord of PIN)' });
 });
 
 // 7. GitHub CLI Scrum Issue Logger
-app.post('/api/github/create-issue', async (req: Request, res: Response) => {
+app.post('/api/github/create-issue', requireAuth, async (req: Request, res: Response) => {
   const { title, body, labels } = req.body;
   if (!title || !body) {
     return res.status(400).json({ error: 'Title and body are required' });

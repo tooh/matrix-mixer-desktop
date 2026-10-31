@@ -1,4 +1,5 @@
 import { MidiPortInfo, MidiMessageEvent, PcListener } from './types';
+import { getAuthHeaders } from './api';
 
 type MidiListener = (channel: number, cc: number, value: number) => void;
 type LogListener = (event: MidiMessageEvent) => void;
@@ -314,7 +315,10 @@ class MidiService {
     // Relay to server
     fetch('/api/midi/send-pc', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeaders()
+      },
       body: JSON.stringify({ channel: safeChannel, program: safeProg })
     }).catch(() => {});
   }
@@ -338,10 +342,14 @@ class MidiService {
     const items = Array.from(this.pendingRelays.values());
     this.pendingRelays.clear();
 
+    const authHeaders = getAuthHeaders();
     for (const item of items) {
       fetch('/api/midi/send', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...authHeaders
+        },
         body: JSON.stringify(item),
         keepalive: true
       }).catch(err => {

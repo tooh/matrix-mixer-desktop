@@ -13,7 +13,7 @@ import { TrackRenameModal } from './TrackRenameModal';
 import { StageWifiModal } from './StageWifiModal';
 
 declare const __APP_VERSION__: string;
-const APP_VERSION = '1.8.1';
+const APP_VERSION = '1.9.0';
 
 export type ChannelBankId = 'stems' | 'all' | 'paths' | 'aux' | 'vocal' | 'rhythm';
 
@@ -421,13 +421,43 @@ export const App: React.FC = () => {
 
   const currentLayerData = layersData[activeLayerId];
 
+  const isAdmin = user?.role === 'ADMIN';
+  const isOperator = user?.role === 'OPERATOR';
+  const isBandMember = user?.role === 'BAND_MEMBER';
+  const isGuest = !user;
+
+  // Auto-switch to Phones layer when user is BAND_MEMBER
+  useEffect(() => {
+    if (user?.role === 'BAND_MEMBER' && activeLayerId !== 'phones') {
+      setActiveLayerId('phones');
+    }
+  }, [user?.role, activeLayerId]);
+
   // Send MIDI CC
   const handleSendMidi = useCallback((cc: number, value: number, desc?: string) => {
+    if (!user) {
+      triggerToast('⚠️ Please sign in to control mixer levels.');
+      setShowLoginModal(true);
+      return;
+    }
+    if (user.role === 'BAND_MEMBER' && activeLayerId !== 'phones') {
+      triggerToast('⚠️ Access Denied: Band Member role is restricted to Phones (IEM) mix.');
+      return;
+    }
     MIDI.sendCC(currentLayerData.midiChannel, cc, value, desc);
-  }, [currentLayerData.midiChannel]);
+  }, [user, activeLayerId, currentLayerData.midiChannel]);
 
   // Update a single channel
   const handleUpdateChannel = (channelId: string, updates: Partial<any>) => {
+    if (!user) {
+      triggerToast('⚠️ Please sign in to adjust faders or mutes.');
+      setShowLoginModal(true);
+      return;
+    }
+    if (user.role === 'BAND_MEMBER' && activeLayerId !== 'phones') {
+      triggerToast('⚠️ Access Denied: Band Member role is restricted to Phones (IEM) mix.');
+      return;
+    }
     setLayersData((prev) => {
       const curLayer = prev[activeLayerId];
       const curChan = curLayer.channels[channelId] || {};
@@ -448,10 +478,18 @@ export const App: React.FC = () => {
   };
 
   const handleOpenRename = (def: ChannelDefinition, currentName: string) => {
+    if (isGuest || isBandMember) {
+      triggerToast('⚠️ Channel renaming requires an OPERATOR or ADMIN role.');
+      return;
+    }
     setRenameTarget({ def, currentName });
   };
 
   const handleSaveRename = (channelId: string, newName: string, allLayers: boolean) => {
+    if (isGuest || isBandMember) {
+      triggerToast('⚠️ Channel renaming requires an OPERATOR or ADMIN role.');
+      return;
+    }
     setLayersData((prev) => {
       const updated = { ...prev };
       const targetLayerKeys = allLayers
@@ -478,6 +516,10 @@ export const App: React.FC = () => {
   };
 
   const handleApplyShowcaseStems = () => {
+    if (isGuest || isBandMember) {
+      triggerToast('⚠️ Applying showcase stems requires an OPERATOR or ADMIN role.');
+      return;
+    }
     const showcaseMap: Record<string, string> = {
       track_1: 'Track 1 (Drums)',
       track_2: 'Track 2 (Bass)',
@@ -511,6 +553,11 @@ export const App: React.FC = () => {
 
   // Dedicated Clear Solo (CC103)
   const handleClearSolo = (sendMidi: boolean = true) => {
+    if (!user) {
+      triggerToast('⚠️ Please sign in to clear solos.');
+      setShowLoginModal(true);
+      return;
+    }
     if (sendMidi) {
       // Send CC103 with value 127
       handleSendMidi(103, 127, 'Clear Solo (CC103: All Matrix Solos Reset)');
@@ -539,6 +586,10 @@ export const App: React.FC = () => {
 
   // Update layer MIDI channels
   const handleUpdateLayerChannels = (newChannels: { quarter_inch: number; xlr: number; phones: number }) => {
+    if (!isAdmin) {
+      triggerToast('⚠️ Modifying MIDI layer channels requires Administrator permissions.');
+      return;
+    }
     setLayersData((prev) => ({
       ...prev,
       quarter_inch: { ...prev.quarter_inch, midiChannel: newChannels.quarter_inch },
@@ -549,10 +600,16 @@ export const App: React.FC = () => {
 
   // Load Preset
   const handleLoadPreset = (preset: Preset) => {
+    if (isGuest) {
+      triggerToast('⚠️ Please sign in to recall presets.');
+      setShowLoginModal(true);
+      return;
+    }
+
     const storedScope = localStorage.getItem('matrix_preset_recall_scope');
     const currentScope = (storedScope as 'active_layer' | 'all_layers') || presetRecallScopeRef.current || 'active_layer';
-    const isAllLayers = currentScope === 'all_layers';
-    const currentActiveLayer = activeLayerIdRef.current || activeLayerId;
+    const isAllLayers = currentScope === 'all_layers' && !isBandMember;
+    const currentActiveLayer = isBandMember ? 'phones' : (activeLayerIdRef.current || activeLayerId);
 
     // Update state for all layers or active layer only
     setLayersData((prev) => {
@@ -605,6 +662,10 @@ export const App: React.FC = () => {
     midiPC?: number | null,
     midiChannel?: number | null
   ) => {
+    if (isGuest || isBandMember) {
+      triggerToast('⚠️ Saving presets requires an OPERATOR or ADMIN role.');
+      return;
+    }
     try {
       const res = await apiRequest<Preset>('/api/presets', {
         method: 'POST',
@@ -625,6 +686,10 @@ export const App: React.FC = () => {
 
   // Update existing Preset metadata or MIDI triggers
   const handleUpdatePreset = async (id: string, updates: Partial<Preset>) => {
+    if (isGuest || isBandMember) {
+      triggerToast('⚠️ Editing presets requires an OPERATOR or ADMIN role.');
+      return;
+    }
     try {
       const res = await apiRequest<Preset>(`/api/presets/${id}`, {
         method: 'PUT',
@@ -639,6 +704,10 @@ export const App: React.FC = () => {
 
   // Overwrite existing preset with current mixer faders
   const handleOverwritePreset = async (preset: Preset) => {
+    if (isGuest || isBandMember) {
+      triggerToast('⚠️ Overwriting presets requires an OPERATOR or ADMIN role.');
+      return;
+    }
     try {
       const res = await apiRequest<Preset>(`/api/presets/${preset.id}`, {
         method: 'PUT',
@@ -655,6 +724,10 @@ export const App: React.FC = () => {
 
   // Delete Preset
   const handleDeletePreset = async (id: string) => {
+    if (!isAdmin) {
+      triggerToast('⚠️ Deleting presets is restricted to Administrator role.');
+      return;
+    }
     try {
       await apiRequest(`/api/presets/${id}`, { method: 'DELETE' });
       setPresets((prev) => prev.filter((p) => p.id !== id));
@@ -727,8 +800,9 @@ export const App: React.FC = () => {
           <div className="layer-tabs">
             <button
               className={`layer-tab ${activeLayerId === 'quarter_inch' ? 'active tab-blue' : ''}`}
-              disabled={lockedLayer && activeLayerId !== 'quarter_inch'}
+              disabled={(lockedLayer && activeLayerId !== 'quarter_inch') || isBandMember}
               onClick={() => setActiveLayerId('quarter_inch')}
+              title={isBandMember ? 'Restricted: Band Member role is limited to Phones (IEM) output' : undefined}
             >
               <span className="tab-label-full">Matrix &gt; 1/4" Out</span>
               <span className="tab-label-short">1/4"</span>
@@ -736,8 +810,9 @@ export const App: React.FC = () => {
             </button>
             <button
               className={`layer-tab ${activeLayerId === 'xlr' ? 'active tab-green' : ''}`}
-              disabled={lockedLayer && activeLayerId !== 'xlr'}
+              disabled={(lockedLayer && activeLayerId !== 'xlr') || isBandMember}
               onClick={() => setActiveLayerId('xlr')}
+              title={isBandMember ? 'Restricted: Band Member role is limited to Phones (IEM) output' : undefined}
             >
               <span className="tab-label-full">Matrix &gt; XLR Out</span>
               <span className="tab-label-short">XLR</span>
@@ -752,6 +827,21 @@ export const App: React.FC = () => {
               <span className="tab-label-short">Phones</span>
               <span className="layer-channel-badge">Ch {layersData.phones.midiChannel}</span>
             </button>
+            {isBandMember && (
+              <span style={{
+                fontSize: '11px',
+                background: 'rgba(245, 158, 11, 0.2)',
+                color: '#fbbf24',
+                border: '1px solid #f59e0b',
+                padding: '3px 8px',
+                borderRadius: '12px',
+                fontWeight: 600,
+                alignSelf: 'center',
+                marginLeft: '4px'
+              }}>
+                🎧 In-Ear Mode (Locked)
+              </span>
+            )}
           </div>
         </div>
 
@@ -817,13 +907,29 @@ export const App: React.FC = () => {
             🐞 Scrum
           </button>
 
-          {/* User profile */}
+          {/* User profile with RBAC badge */}
           <button
             className="btn btn-secondary-action"
-            style={{ borderColor: user ? '#10b981' : '#334155' }}
+            style={{
+              borderColor: user ? (isAdmin ? '#ef4444' : isOperator ? '#38bdf8' : '#f59e0b') : '#64748b',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
             onClick={() => setShowLoginModal(true)}
+            title={user ? `Signed in as ${user.name} (${user.role})` : 'Sign in to unlock mixer control'}
           >
-            👤 {user ? user.name : 'Sign In'}
+            <span>👤 {user ? user.name : 'Sign In'}</span>
+            <span style={{
+              fontSize: '9px',
+              padding: '1px 5px',
+              borderRadius: '4px',
+              fontWeight: 700,
+              background: isAdmin ? '#ef4444' : isOperator ? '#0284c7' : isBandMember ? '#d97706' : '#334155',
+              color: '#ffffff'
+            }}>
+              {user ? user.role : 'VIEW ONLY'}
+            </span>
           </button>
         </div>
       </header>
@@ -898,6 +1004,50 @@ export const App: React.FC = () => {
         </div>
       </div>
 
+      {/* RBAC Status & Awareness Notice */}
+      {!user && (
+        <aside style={{
+          background: 'rgba(30, 41, 59, 0.85)',
+          borderBottom: '1px solid #334155',
+          padding: '6px 16px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          fontSize: '12px',
+          color: '#cbd5e1'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>👁️</span>
+            <span><strong>View-Only Mode:</strong> Sign in as FOH Operator, Band Member, or Admin to control faders, mute/solo, and recall presets.</span>
+          </div>
+          <button
+            className="btn btn-primary"
+            style={{ padding: '2px 10px', fontSize: '11px' }}
+            onClick={() => setShowLoginModal(true)}
+          >
+            Sign In
+          </button>
+        </aside>
+      )}
+      {isBandMember && (
+        <aside style={{
+          background: 'rgba(245, 158, 11, 0.12)',
+          borderBottom: '1px solid rgba(245, 158, 11, 0.3)',
+          padding: '6px 16px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          fontSize: '12px',
+          color: '#fde68a'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>🎧</span>
+            <span><strong>Band Member In-Ear Monitor Mode:</strong> You have control over Matrix &gt; Phones Out. Other layers are locked.</span>
+          </div>
+          <span style={{ fontSize: '11px', color: '#fbbf24', fontWeight: 600 }}>MIDI Ch {layersData.phones.midiChannel}</span>
+        </aside>
+      )}
+
       {/* Main Mixer Console with Active Bank Channels */}
       <MixerConsole
         channels={filteredChannels}
@@ -937,6 +1087,7 @@ export const App: React.FC = () => {
         recallScope={presetRecallScope}
         onUpdateRecallScope={handleUpdateRecallScope}
         activeLayerName={activeLayer.name}
+        isAdmin={isAdmin}
       />
 
       <PresetsModal
@@ -951,6 +1102,8 @@ export const App: React.FC = () => {
         onUpdateRecallScope={handleUpdateRecallScope}
         activeLayerName={activeLayer.name}
         onOverwritePreset={handleOverwritePreset}
+        canManagePresets={isAdmin || isOperator}
+        canDeletePresets={isAdmin}
       />
 
       <DocumentationModal

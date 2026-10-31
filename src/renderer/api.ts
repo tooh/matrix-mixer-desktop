@@ -1,22 +1,35 @@
+import { UserSession } from './types';
+
+export function getStoredUser(): UserSession | null {
+  try {
+    const stored = localStorage.getItem('matrix_mixer_user');
+    return stored ? JSON.parse(stored) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function getAuthHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {};
+  const user = getStoredUser();
+  if (user && user.role) {
+    headers['X-User-Id'] = user.id || 'anonymous';
+    headers['X-User-Role'] = user.role;
+  } else {
+    headers['X-User-Role'] = 'GUEST';
+  }
+  return headers;
+}
+
 export async function apiRequest<T>(url: string, options: RequestInit = {}): Promise<T> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 30000);
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
+    ...getAuthHeaders(),
     ...(options.headers as Record<string, string> || {})
   };
-
-  const storedUser = localStorage.getItem('matrix_mixer_user');
-  if (storedUser) {
-    try {
-      const u = JSON.parse(storedUser);
-      headers['X-User-Id'] = u.id;
-      headers['X-User-Role'] = u.role;
-    } catch (e) {
-      // ignore
-    }
-  }
 
   try {
     const res = await fetch(url, {
