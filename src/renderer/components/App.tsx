@@ -66,7 +66,17 @@ interface ToastState {
 export const App: React.FC = () => {
   const [channels, setChannels] = useState<ChannelDefinition[]>([]);
   const [layers, setLayers] = useState<LayerConfig[]>([]);
-  const [activeLayerId, setActiveLayerId] = useState<'quarter_inch' | 'xlr' | 'phones'>('xlr');
+  const [activeLayerId, setActiveLayerId] = useState<'quarter_inch' | 'xlr' | 'phones'>(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const l = params.get('layer');
+      if (l === 'quarter_inch' || l === 'xlr' || l === 'phones') return l;
+      const r = params.get('role');
+      if (r === 'band' || r === 'iem') return 'phones';
+      if (r === 'admin') return 'quarter_inch';
+    }
+    return 'xlr';
+  });
   
   // Preset Recall Scope: 'active_layer' (38 CCs) or 'all_layers' (114 CCs)
   const [presetRecallScope, setPresetRecallScope] = useState<'active_layer' | 'all_layers'>(() => {
@@ -309,12 +319,30 @@ export const App: React.FC = () => {
     // 3. Init MIDI
     MIDI.init();
 
-    // 4. Check stored user
-    const savedUser = localStorage.getItem('matrix_mixer_user');
-    if (savedUser) {
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch (e) {}
+    // 4. Check stored user or URL override (?role=admin | operator | band)
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const roleParam = params.get('role');
+      if (roleParam === 'admin') {
+        const u: UserSession = { id: 'usr-admin', name: 'System Administrator', role: 'ADMIN' };
+        setUser(u);
+        localStorage.setItem('matrix_mixer_user', JSON.stringify(u));
+      } else if (roleParam === 'operator' || roleParam === 'foh') {
+        const u: UserSession = { id: 'usr-foh', name: 'FOH Sound Engineer', role: 'OPERATOR' };
+        setUser(u);
+        localStorage.setItem('matrix_mixer_user', JSON.stringify(u));
+      } else if (roleParam === 'band' || roleParam === 'iem') {
+        const u: UserSession = { id: 'usr-band', name: 'Band Member (IEM)', role: 'BAND_MEMBER' };
+        setUser(u);
+        localStorage.setItem('matrix_mixer_user', JSON.stringify(u));
+      } else {
+        const savedUser = localStorage.getItem('matrix_mixer_user');
+        if (savedUser) {
+          try {
+            setUser(JSON.parse(savedUser));
+          } catch (e) {}
+        }
+      }
     }
   }, []);
 
