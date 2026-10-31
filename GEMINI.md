@@ -50,3 +50,7 @@ Bij het uitbrengen van een release **MOETEN** altijd de volgende stappen synchro
      gh release create vX.Y.Z "release/Helix Matrix Mixer-X.Y.Z-arm64.dmg" --title "vX.Y.Z - Korte Titel" --notes "Release notes..."
      ```
    - Bevestig aan de gebruiker met de directe link naar de GitHub release.
+
+4. **Lokale Installatie & Service Herstart (Verplicht op macOS)**:
+   - Voer direct na het publiceren van de release `npm run install:local` uit.
+   - Dit script installeert automatisch het nieuwe `.dmg` distributiepakket naar `/Applications/Helix Matrix Mixer.app`, sluit de eventueel nog draaiende oude instantie af (`pkill`), wist Gatekeeper quarantaine-attributen (`xattr -cr`), start de nieuwe app op (`open`) en verifieert automatisch dat de server op poort 3005 live is en de nieuwe versietag serveert.
