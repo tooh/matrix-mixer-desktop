@@ -160,10 +160,20 @@ export const App: React.FC = () => {
 
   // Modals
   const [showMidiModal, setShowMidiModal] = useState<boolean>(false);
-  const [showPresetsModal, setShowPresetsModal] = useState<boolean>(false);
+  const [showPresetsModal, setShowPresetsModal] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return new URLSearchParams(window.location.search).get('modal') === 'presets';
+    }
+    return false;
+  });
   const [showDocsModal, setShowDocsModal] = useState<boolean>(false);
   const [showScrumModal, setShowScrumModal] = useState<boolean>(false);
-  const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
+  const [showLoginModal, setShowLoginModal] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return new URLSearchParams(window.location.search).get('modal') === 'auth';
+    }
+    return false;
+  });
   const [showWifiModal, setShowWifiModal] = useState<boolean>(false);
   const [renameTarget, setRenameTarget] = useState<{ def: ChannelDefinition; currentName: string } | null>(null);
   const [toast, setToast] = useState<ToastState | null>(null);

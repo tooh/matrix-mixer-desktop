@@ -50,17 +50,17 @@ The application enforces 3 roles across both client UI and server API endpoints:
 ### 1. ⚡ Administrator (`ADMIN`)
 Full administrative access across all 3 matrix layers (1/4" Line, XLR, Phones), preset management (including deletion), server USB CoreMIDI device switching, and system settings.
 
-![System Administrator](docs/screenshots/role-1-admin.png)
+![System Administrator](docs/screenshots/role-1-admin.png?raw=true&v=1.9.0)
 
 ### 2. 🎛️ FOH Sound Engineer (`OPERATOR`)
 Full real-time audio operator control across all 3 layers: faders, pan, mute, solo, and preset recall & creation. Hardware USB remapping and preset deletion are protected.
 
-![FOH Sound Engineer](docs/screenshots/role-2-operator.png)
+![FOH Sound Engineer](docs/screenshots/role-2-operator.png?raw=true&v=1.9.0)
 
 ### 3. 🎧 Band Member (`BAND_MEMBER`)
 Stage safety mode: automatically locked into the **Phones Out** (In-Ear Monitor) layer. Other matrix layers (1/4" & XLR) and preset management are locked to prevent accidental interference with FOH sound.
 
-![Band Member (IEM)](docs/screenshots/role-3-band-member.png)
+![Band Member (IEM)](docs/screenshots/role-3-band-member.png?raw=true&v=1.9.0)
 
 ---
 

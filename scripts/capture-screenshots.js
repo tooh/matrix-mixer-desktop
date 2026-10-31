@@ -4,35 +4,52 @@ const fs = require('fs');
 
 app.disableHardwareAcceleration();
 
+const PORT = 3999;
+
+const targets = {
+  admin: {
+    role: 'ADMIN',
+    url: `http://localhost:${PORT}/?role=admin&modal=auth`,
+    filename: 'role-1-admin.png'
+  },
+  operator: {
+    role: 'OPERATOR',
+    url: `http://localhost:${PORT}/?role=operator`,
+    filename: 'role-2-operator.png'
+  },
+  band: {
+    role: 'BAND_MEMBER',
+    url: `http://localhost:${PORT}/?role=band`,
+    filename: 'role-3-band-member.png'
+  }
+};
+
+const targetKey = process.argv[2] || 'all';
+
 async function run() {
   await app.whenReady();
+
+  // Start fresh server with newest dist bundle
+  const { startServer } = require('../dist/server.js');
+  try {
+    await startServer(PORT);
+  } catch (e) {}
 
   const outDir = path.resolve(__dirname, '../docs/screenshots');
   if (!fs.existsSync(outDir)) {
     fs.mkdirSync(outDir, { recursive: true });
   }
 
-  const targets = [
-    {
-      role: 'ADMIN',
-      url: 'http://localhost:3005/?role=admin',
-      filename: 'role-1-admin.png'
-    },
-    {
-      role: 'OPERATOR',
-      url: 'http://localhost:3005/?role=operator',
-      filename: 'role-2-operator.png'
-    },
-    {
-      role: 'BAND_MEMBER',
-      url: 'http://localhost:3005/?role=band',
-      filename: 'role-3-band-member.png'
-    }
-  ];
+  const items = targetKey === 'all' ? Object.values(targets) : [targets[targetKey]];
+  if (!items[0]) {
+    console.error('Invalid target. Choose admin, operator, or band');
+    app.exit(1);
+    return;
+  }
 
-  for (const item of targets) {
-    console.log(`Capturing screenshot for role: ${item.role}...`);
-    const ses = session.fromPartition(`persist:test-${item.role.toLowerCase()}-${Date.now()}`);
+  for (const item of items) {
+    console.log(`[Screenshot] Capturing ${item.role} -> ${item.filename}...`);
+    const ses = session.fromPartition(`persist:shot-${item.role.toLowerCase()}-${Date.now()}`);
     await ses.clearCache();
     await ses.clearStorageData();
 
@@ -47,23 +64,21 @@ async function run() {
     });
 
     await win.loadURL(item.url);
-
-    // Wait 2.5s for fonts, CSS and fader states to render completely
-    await new Promise((resolve) => setTimeout(resolve, 2500));
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
     const image = await win.capturePage();
     const filePath = path.join(outDir, item.filename);
-    fs.writeFileSync(filePath, image.toPNG());
-    console.log(`Saved screenshot to: ${filePath}`);
+    const pngBuf = image.toPNG();
+    fs.writeFileSync(filePath, pngBuf);
+    console.log(`[Screenshot] Successfully wrote ${item.filename} (${pngBuf.length} bytes)`);
 
     win.destroy();
   }
 
-  console.log('All 3 distinct role screenshots captured successfully!');
   app.exit(0);
 }
 
 run().catch((err) => {
-  console.error('Error capturing screenshots:', err);
+  console.error('Error:', err);
   process.exit(1);
 });
