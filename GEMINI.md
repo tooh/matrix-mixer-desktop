@@ -37,7 +37,10 @@ Bij het uitbrengen van een release **MOETEN** altijd de volgende stappen synchro
    - `src/main/main.ts` (versieheader in server console logging)
    - `README.md` (downloadlink naar de nieuwste `.dmg` in `release/`)
 
-2. **Build Verificatie**:
+2. **Documentatie & Storage Security**:
+   - Werk `docs/Database_Security_Hardening_Report.md` bij met de actuele release-tag conform OWASP richtlijnen.
+
+3. **Build Verificatie**:
    - `npm run build`
    - Pakket gereed in `release/Helix Matrix Mixer-X.Y.Z-arm64.dmg`
 
