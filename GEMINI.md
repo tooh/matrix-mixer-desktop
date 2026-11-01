@@ -37,8 +37,9 @@ Bij het uitbrengen van een release **MOETEN** altijd de volgende stappen synchro
    - `src/main/main.ts` (versieheader in server console logging)
    - `README.md` (downloadlink naar de nieuwste `.dmg` in `release/`)
 
-2. **Documentatie & Storage Security**:
-   - Werk `docs/Database_Security_Hardening_Report.md` bij met de actuele release-tag conform OWASP richtlijnen.
+2. **Documentatie, Storage Security & ISO 27001**:
+   - Werk `docs/Database_Security_Hardening_Report.md` bij met de actuele release-tag conform OWASP en CIS richtlijnen.
+   - Werk `docs/ISO27001_Compliance_Report.md` bij conform het ISO/IEC 27001:2022 Annex A controlekader.
 
 3. **Build Verificatie**:
    - `npm run build`
