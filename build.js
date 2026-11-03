@@ -1,9 +1,14 @@
 const esbuild = require('esbuild');
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 const watch = process.argv.includes('--watch');
-const VERSION = '1.9.0';
+const install = process.argv.includes('--install');
+
+const pkgPath = path.join(__dirname, 'package.json');
+const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+const VERSION = pkg.version || '1.9.1';
 
 function copyFile(src, dest) {
   if (!fs.existsSync(src)) return;
@@ -109,12 +114,26 @@ async function run() {
     target: 'es2020',
     outfile: 'dist/renderer/index.js',
     define: {
-      'process.env.NODE_ENV': '"production"'
+      'process.env.NODE_ENV': '"production"',
+      '__APP_VERSION__': JSON.stringify(VERSION)
     },
     sourcemap: true
   });
 
   console.log('✅ Build complete!');
+
+  // 4. Packaging and Local Installation (if --install flag is passed)
+  if (install) {
+    console.log('\n📦 Packaging application bundle with electron-builder...');
+    try {
+      execSync('npx electron-builder --mac --arm64', { stdio: 'inherit' });
+    } catch (e) {
+      console.warn('⚠️ electron-builder notice (will proceed with app bundle if generated):', e.message);
+    }
+
+    console.log('🚀 Running local installation to /Applications...');
+    require('./scripts/install-dmg.js');
+  }
 }
 
 run().catch((err) => {

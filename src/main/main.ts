@@ -15,10 +15,20 @@ dotenv.config();
 const execFileAsync = promisify(execFile);
 const app = express();
 const PORT = process.env.PORT || 3005;
-const VERSION = '1.9.0';
+const VERSION = '1.9.2';
 
 app.use(cors());
 app.use(express.json());
+
+function isVersionNewer(remote: string, current: string): boolean {
+  if (!remote || !current || remote === current) return false;
+  const parse = (v: string) => v.replace(/^v/, '').split('.').map(n => parseInt(n, 10) || 0);
+  const [rMajor = 0, rMinor = 0, rPatch = 0] = parse(remote);
+  const [cMajor = 0, cMinor = 0, cPatch = 0] = parse(current);
+  if (rMajor !== cMajor) return rMajor > cMajor;
+  if (rMinor !== cMinor) return rMinor > cMinor;
+  return rPatch > cPatch;
+}
 
 // 1. Version Endpoint (Non-cached)
 app.get('/version.txt', (_req: Request, res: Response) => {
@@ -29,6 +39,76 @@ app.get('/version.txt', (_req: Request, res: Response) => {
     'Content-Type': 'text/plain'
   });
   res.send(VERSION);
+});
+
+// 1b. Remote Update Checker (Queries GitHub Releases / Repository)
+app.get('/api/system/check-update', async (_req: Request, res: Response) => {
+  const GITHUB_REPO = process.env.GITHUB_REPO || 'tooh/matrix-mixer-desktop';
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4000);
+
+    // 1. Try GitHub Releases API
+    const releaseRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases/latest`, {
+      signal: controller.signal,
+      headers: {
+        'User-Agent': 'MatrixMixer-UpdateChecker',
+        'Accept': 'application/vnd.github.v3+json'
+      }
+    });
+    clearTimeout(timeout);
+
+    if (releaseRes.ok) {
+      const data: any = await releaseRes.json();
+      const tagName = (data.tag_name || '').replace(/^v/, '').trim();
+      const releaseUrl = data.html_url || `https://github.com/${GITHUB_REPO}/releases/latest`;
+      if (tagName && isVersionNewer(tagName, VERSION)) {
+        return res.json({
+          updateAvailable: true,
+          currentVersion: VERSION,
+          latestVersion: tagName,
+          releaseUrl,
+          releaseName: data.name || `v${tagName}`,
+          notes: data.body || '',
+          source: 'github-release'
+        });
+      }
+    }
+
+    // 2. Fallback: check raw package.json on main branch
+    const controller2 = new AbortController();
+    const timeout2 = setTimeout(() => controller2.abort(), 3000);
+    const rawRes = await fetch(`https://raw.githubusercontent.com/${GITHUB_REPO}/main/package.json`, {
+      signal: controller2.signal
+    });
+    clearTimeout(timeout2);
+
+    if (rawRes.ok) {
+      const rawPkg: any = await rawRes.json();
+      const rawVer = (rawPkg.version || '').trim();
+      if (rawVer && isVersionNewer(rawVer, VERSION)) {
+        return res.json({
+          updateAvailable: true,
+          currentVersion: VERSION,
+          latestVersion: rawVer,
+          releaseUrl: `https://github.com/${GITHUB_REPO}`,
+          source: 'github-main'
+        });
+      }
+    }
+
+    res.json({
+      updateAvailable: false,
+      currentVersion: VERSION,
+      latestVersion: VERSION
+    });
+  } catch (err: any) {
+    res.json({
+      updateAvailable: false,
+      currentVersion: VERSION,
+      error: err.message
+    });
+  }
 });
 
 // 2. Health & Status
@@ -338,6 +418,37 @@ app.post('/api/auth/login', (req: Request, res: Response) => {
   res.status(400).json({ error: 'Inloggegevens vereist (gebruikersnaam/wachtwoord of PIN)' });
 });
 
+function resolveGhPath(): string {
+  if (process.env.GH_PATH && fs.existsSync(process.env.GH_PATH)) {
+    return process.env.GH_PATH;
+  }
+  if (fs.existsSync('/opt/homebrew/bin/gh')) {
+    return '/opt/homebrew/bin/gh';
+  }
+  if (fs.existsSync('/usr/local/bin/gh')) {
+    return '/usr/local/bin/gh';
+  }
+  return 'gh';
+}
+
+function saveLocalScrumIssue(issue: { title: string; body: string; labels: string[]; createdAt: string }) {
+  try {
+    const dataDir = process.env.APP_DATA_DIR || path.resolve(process.cwd(), 'database');
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true });
+    }
+    const filePath = path.join(dataDir, 'scrum_issues.json');
+    let issues: any[] = [];
+    if (fs.existsSync(filePath)) {
+      try { issues = JSON.parse(fs.readFileSync(filePath, 'utf8')); } catch (e) {}
+    }
+    issues.push(issue);
+    fs.writeFileSync(filePath, JSON.stringify(issues, null, 2), 'utf8');
+  } catch (e) {
+    console.warn('[Scrum] Failed to save local issue backup:', e);
+  }
+}
+
 // 7. GitHub CLI Scrum Issue Logger
 app.post('/api/github/create-issue', requireAuth, async (req: Request, res: Response) => {
   const { title, body, labels } = req.body;
@@ -345,12 +456,22 @@ app.post('/api/github/create-issue', requireAuth, async (req: Request, res: Resp
     return res.status(400).json({ error: 'Title and body are required' });
   }
 
-  const GITHUB_REPO = process.env.GITHUB_REPO || 'tooh/matrix-mixer';
+  const GITHUB_REPO = process.env.GITHUB_REPO || 'tooh/matrix-mixer-desktop';
+
+  // Always save backup to local database/scrum_issues.json first
+  saveLocalScrumIssue({
+    title,
+    body,
+    labels: labels || [],
+    createdAt: new Date().toISOString()
+  });
+
+  const ghBin = resolveGhPath();
 
   try {
     const labelArgs = (labels || []).flatMap((l: string) => ['-l', l]);
     const { stdout } = await execFileAsync(
-      'gh',
+      ghBin,
       ['issue', 'create', '--repo', GITHUB_REPO, '--title', title, '--body', body, ...labelArgs],
       {
         timeout: 15000,
@@ -366,14 +487,9 @@ app.post('/api/github/create-issue', requireAuth, async (req: Request, res: Resp
     const issueNum = url.split('/').pop() || 'new';
     res.json({ success: true, url, issueNumber: issueNum });
   } catch (err: any) {
-    // In local sandbox or offline mode, simulate issue receipt
     console.warn('[GitHub CLI] Failed to create issue via gh:', err.message);
-    const simulatedNum = Math.floor(Math.random() * 100) + 1;
-    res.json({
-      success: true,
-      simulated: true,
-      url: `https://github.com/${GITHUB_REPO}/issues/${simulatedNum}`,
-      issueNumber: `#${simulatedNum} (Locally registered)`
+    res.status(500).json({
+      error: `GitHub CLI error: ${err.message}. Het issue is wel veilig lokaal opgeslagen in database/scrum_issues.json.`
     });
   }
 });

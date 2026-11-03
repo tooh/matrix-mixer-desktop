@@ -1,0 +1,220 @@
+<project_kickstart_specification version="1.2" schema_type="enterprise_fullstack_pwa">
+  <!-- 
+    ========================================================================
+    📋 PROJECT CONFIGURATION (Provide the 4 required parameters below)
+    ========================================================================
+  -->
+  <configuration>
+    <parameter name="PROJECT_NAME" required="true">[PROJECT_NAME]</parameter>
+    <parameter name="SHORT_DESCRIPTION" required="true">[SHORT_DESCRIPTION]</parameter>
+    <parameter name="PORT" required="true">[PORT]</parameter>
+    <parameter name="AUTH_TYPE" default="PASSWORD">[PASSWORD or PIN]</parameter>
+    <parameter name="I18N_ENABLED" default="true">true</parameter>
+    <parameter name="DEFAULT_LOCALE" default="nl">nl</parameter>
+    <parameter name="CODE_LANGUAGE" default="en">en</parameter>
+    
+    <!-- Automatically derived defaults (unless explicitly overridden) -->
+    <derived_defaults>
+      <db_name>[PROJECT_NAME in snake_case]</db_name>
+      <github_repo>tooh/[PROJECT_NAME]</github_repo>
+      <github_visibility>private</github_visibility>
+      <daemon_service>com.user.[PROJECT_NAME in lowercase]</daemon_service>
+      <launchagent_plist>~/Library/LaunchAgents/com.user.[PROJECT_NAME in lowercase].plist</launchagent_plist>
+      <log_stdout>logs/stdout.log</log_stdout>
+      <log_stderr>logs/stderr.log</log_stderr>
+    </derived_defaults>
+  </configuration>
+
+  <!-- 
+    ========================================================================
+    🏗️ ARCHITECTURE & TECHNOLOGY STACK
+    ========================================================================
+  -->
+  <architecture>
+    <!-- 1. BACKEND -->
+    <backend runtime="node" framework="express" language="typescript" bundler="esbuild">
+      <port source="process.env.PORT" default="${PORT}" />
+      <database engine="mysql2/promise" charset="utf8mb4_unicode_ci" name="${DB_NAME}">
+        <connection_pool min="2" max="10" enable_keep_alive="true" />
+        <security_hardening_standards>
+          <standard name="OWASP" url="https://cheatsheetseries.owasp.org/cheatsheets/Database_Security_Cheat_Sheet.html" />
+          <standard name="CIS" benchmark="CIS_MySQL_Benchmark" url="https://www.cisecurity.org/benchmark/mysql" />
+          <rule name="principle_of_least_privilege">Never use MySQL root for application connection. Apply Principle of Least Privilege (PoLP): provision dedicated application user with DML (SELECT, INSERT, UPDATE, DELETE) and migration DDL (CREATE, ALTER, INDEX, REFERENCES) on ${DB_NAME} only, without administrative privileges (SUPER, PROCESS, FILE, SHUTDOWN) or GRANT OPTION.</rule>
+          <rule name="host_restrictions">Accounts restricted to 127.0.0.1 or localhost (no wildcard % hosts). Zero anonymous user accounts.</rule>
+          <rule name="strict_schema_isolation">The application must strictly connect only to ${DB_NAME}. Cross-database fallbacks or accessing other schemas are strictly prohibited; fail fast on startup if schema is unavailable.</rule>
+          <rule name="system_security">Enforce local_infile = OFF to prevent arbitrary file read exploits. Remove test databases.</rule>
+          <rule name="query_parameterization">100% prepared statements or parameterized queries (?) to eliminate SQL Injection (SQLi) risks. String interpolation in SQL is strictly forbidden.</rule>
+          <rule name="network_isolation">Database server binds to localhost 127.0.0.1 or unix socket only; no exposed public interfaces without TLS encryption and firewall whitelisting.</rule>
+          <rule name="secrets_management">Database credentials stored exclusively in .env (enforced via .gitignore). Only sanitized dummy placeholders permitted in .env.example.</rule>
+          <rule name="backup_security">Backup files in backups/ restricted with strict filesystem permissions (0700 dir, 0600 files).</rule>
+        </security_hardening_standards>
+        <feature name="zero_downtime_startup_migrations" execution="on_boot">
+          <rule>Always use CREATE TABLE IF NOT EXISTS and SHOW COLUMNS LIKE '...' / ALTER TABLE ADD COLUMN</rule>
+        </feature>
+        <feature name="specialized_billing_models">
+          <rule>Support dedicated invoice types, flexible billing units (e.g. dagdelen, km allowance), and fiscal tax exemptions (e.g. teaching art. 11 lid 1 sub o Wet OB 1968)</rule>
+        </feature>
+        <feature name="credit_lifecycle_and_settlement">
+          <rule>Full credit note lifecycle with automated status transitions (GECREDITEERD, VERREKEND) and accounting reconciliation</rule>
+        </feature>
+      </database>
+      <cli_process_execution mechanism="execFileAsync" timeout_ms="15000">
+        <security_rule>Never use shell-string interpolation for binary execution (prevent command injection)</security_rule>
+        <environment>
+          <variable name="GH_PROMPT_DISABLED" value="1" />
+          <variable name="GH_NO_UPDATE_NOTIFIER" value="1" />
+          <variable name="NO_COLOR" value="1" />
+        </environment>
+        <path_resolution>
+          <candidate>/opt/homebrew/bin/gh</candidate>
+          <candidate>/usr/local/bin/gh</candidate>
+          <fallback>gh</fallback>
+        </path_resolution>
+      </cli_process_execution>
+      <endpoints>
+        <endpoint method="GET" path="/version.txt" cache="no-cache" description="Returns current SemVer string" />
+        <endpoint method="GET" path="/api-docs" description="Interactive Swagger UI browser console" />
+        <endpoint method="GET" path="/api/openapi.json" description="Machine-readable OpenAPI 3.0 specification in JSON format" />
+        <endpoint method="GET" path="/api/openapi.yaml" description="Machine-readable OpenAPI 3.0 specification in YAML format" />
+        <endpoint method="POST" path="/api/docs/read" description="Reads FAM, TAM, CHANGELOG and OpenAPI in real-time" />
+        <endpoint method="POST" path="/api/github/create-issue" description="Directly logs backlog issues via gh CLI" />
+        <endpoint method="POST" path="/api/pptx/generate-progress-report" description="Generates 16:9 executive PowerPoint presentations (.pptx) via pptxgenjs" />
+        <capability name="pmo_portfolio_management" description="Strategic project prioritization (P1-P4), business value scoring (0-100), RAG traffic lights and portfolio overview" />
+      </endpoints>
+    </backend>
+
+    <!-- 2. FRONTEND (PWA) -->
+    <frontend framework="react19" language="typescript" type="pwa">
+      <bundler tool="esbuild" target="chrome100" />
+      <pwa_assets>
+        <asset name="manifest.json" path="src/renderer/manifest.json" />
+        <asset name="service_worker" path="src/renderer/sw.js" cache_invalidation="CACHE_NAME = '${PROJECT_NAME}-cache-v' + VERSION" />
+        <asset name="icons" path="src/renderer/icon.png" dimensions="1024x1024" format="png" description="Domain-specific high-resolution application icon" required="true" />
+      </pwa_assets>
+      <api_client path="src/renderer/api.ts" timeout_ms="30000" mechanism="AbortController" />
+      <ui_standard density="compact" row_height="38px" theme="dark_or_adaptive" mobile_dock="true" />
+    </frontend>
+
+    <!-- 3. SECURITY & RBAC -->
+    <security_rbac auth_type="${AUTH_TYPE}">
+      <roles>
+        <role name="ADMIN" access="full" />
+        <role name="BACK_OFFICE" access="operational_and_reporting" />
+        <role name="USER" access="self_service" />
+      </roles>
+
+      <authentication_policy>
+        <!-- PASSWORD SPECIFICATION -->
+        <mode_password enabled_when="${AUTH_TYPE} == 'PASSWORD'">
+          <rule name="anti_enumeration">NEVER render a public user dropdown; require manual username/email input</rule>
+          <rule name="login_field">Combined input: Username or Email (autocomplete="username")</rule>
+          <rule name="password_field">Masked password input with interactive Show/Hide toggle</rule>
+          <rule name="backend_lookup">Query matches: LOWER(email) = ? OR LOWER(username) = ? OR LOWER(name) = ?</rule>
+          <rule name="error_handling">Always return generic error: "Invalid username/email or password"</rule>
+          <rule name="crypto">Passwords hashed using SHA-256 or PBKDF2; never plain-text</rule>
+          <rule name="remember_me">Opt-in option to remember the username locally using localStorage</rule>
+        </mode_password>
+
+        <!-- PIN SPECIFICATION -->
+        <mode_pin enabled_when="${AUTH_TYPE} == 'PIN'">
+          <rule name="pin_pad">4- or 6-digit numeric keypad / PIN dots input</rule>
+          <rule name="crypto">PBKDF2 with 100,000 iterations, cryptographic salt, and timingSafeEqual</rule>
+          <rule name="columns">pin_hash VARCHAR(64), pin_salt VARCHAR(32)</rule>
+        </mode_pin>
+      </authentication_policy>
+
+      <api_guards>
+        <header name="X-User-Id" source="sessionStorage.currentUser.id" />
+        <header name="X-User-Role" source="sessionStorage.currentUser.security_role" />
+        <rule>Backend validates roles per route; configuration and user mutations require ADMIN role</rule>
+      </api_guards>
+
+      <secrets_and_env_policy>
+        <rule name="no_hardcoded_passwords">NEVER embed fallback passwords in source code (e.g. process.env.ADMIN_PASSWORD || 'default'). If a secret is missing from environment, return a 500 configuration error or fail fast on boot.</rule>
+        <rule name="sanitized_env_example">NEVER include actual passwords, operational credentials or recognizable default passwords in .env.example. Use explicit dummy placeholders like ADMIN_PASSWORD=change_this_to_a_secure_password.</rule>
+        <rule name="gitignore_enforcement">Always include .env in .gitignore immediately upon repository initialization. Never commit or push .env to version control.</rule>
+      </secrets_and_env_policy>
+    </security_rbac>
+
+    <!-- 4. BACKUP & RETENTION -->
+    <backup_strategy daily_skip_flag="true" retention_days="14">
+      <script path="database/backup.js" pattern="backup_${DB_NAME}_%Y%m%d_%H%M%S.sql" output_dir="backups/" />
+      <scheduler path="src/main/backupScheduler.ts" run_on_boot="true" poll_interval_ms="3600000" />
+      <restore_script path="database/restore.js" mode="interactive_or_file_argument" />
+    </backup_strategy>
+
+    <!-- 5. IN-APP DOCUMENTATION -->
+    <in_app_documentation viewer_component="DocumentatieModal.tsx" route="POST /api/docs/read">
+      <document name="Functioneel_Applicatiebeheer_FAM" path="docs/Functioneel_Applicatiebeheer_FAM.md" />
+      <document name="Technisch_Applicatiebeheer_TAM" path="docs/Technisch_Applicatiebeheer_TAM.md" />
+      <document name="Changelog" path="CHANGELOG.md" sync_target="docs/CHANGELOG.md" />
+      <document name="Database_Security_Hardening_Report" path="docs/Database_Security_Hardening_Report.md" frequency="every_minor_release" standard="OWASP Database Security Cheat Sheet &amp; CIS Database Benchmark" />
+      <document name="ISO27001_Compliance_Report" path="docs/ISO27001_Compliance_Report.md" frequency="every_minor_release" standard="ISO/IEC 27001:2022 Annex A Security Controls" />
+      <renderer type="mermaid" dark_theme="true" export_pdf="true" />
+      <swagger_ui mount_path="/api-docs" source="docs/openapi.yaml" />
+    </in_app_documentation>
+  </architecture>
+
+  <!-- 
+    ========================================================================
+    📜 RULES FOR AI AGENTS (GEMINI.md)
+    ========================================================================
+  -->
+  <rules_file path="GEMINI.md">
+    <protocol name="release_and_documentation">
+      <description>Strict SemVer 2.0 and Sprint/Milestone bundled release protocol:</description>
+      <semver_policy>
+        <major>Breaking changes and incompatible schema/architecture updates (X.0.0)</major>
+        <minor>New functional features, modules, or exports (backwards-compatible) (1.X.0)</minor>
+        <patch>Bug fixes, style/CSS fixes, minor performance improvements (1.0.X)</patch>
+      </semver_policy>
+      <sprint_workflow>
+        <container>GitHub Milestones represent 2-week bundled sprint releases using convention 'Sprint JJ/WW - vX.Y.Z: Descr' (e.g. Sprint 26/41 - v1.1.0: Basisfunctionaliteit)</container>
+        <issue_labels>type: feature (triggers MINOR), type: bug (triggers PATCH), type: enhancement, type: documentation, type: breaking (triggers MAJOR), module:*, prio:*</issue_labels>
+        <cadence>Execute the full documentation and release pipeline upon milestone completion rather than per individual commit</cadence>
+      </sprint_workflow>
+      <step order="1">
+        <action>Determine and bump SemVer version across all files based on completed milestone issues</action>
+        <targets>
+          <target file="build.js" regex="const VERSION = '...'"/>
+          <target file="package.json" regex="\"version\": \"...\""/>
+          <target file="src/main/ipc.ts" context="Scrum issue template 'Reported via'"/>
+          <target file="src/renderer/components/App.tsx" context="UI version badges"/>
+          <target file="docs/Functioneel_Applicatiebeheer_FAM.md" header="* **Versie:**"/>
+          <target file="docs/Technisch_Applicatiebeheer_TAM.md" header="* **Versie:**"/>
+        </targets>
+      </step>
+      <step order="2">
+        <action>Add bundled release section to top of CHANGELOG.md under ## [X.Y.Z] - YYYY-MM-DD and sync to docs/CHANGELOG.md</action>
+      </step>
+      <step order="3">
+        <action>Update FAM (for UI, business process, or role changes) and TAM (for database, API, or architecture changes). On minor releases with endpoint changes, update OpenAPI 3.0 specification (docs/openapi.yaml &amp; docs/openapi.json) and TAM API section synchronously. On every minor release, formally deliver and update the OWASP &amp; CIS Database Security Hardening Report (docs/Database_Security_Hardening_Report.md) and the ISO/IEC 27001 Compliance Report (docs/ISO27001_Compliance_Report.md).</action>
+      </step>
+      <step order="4">
+        <action>Run npm run build, restart background service (launchctl kickstart -k gui/$(id -u)/${DAEMON_SERVICE}), and verify with curl http://localhost:${PORT}/version.txt (HTTP 200). Fixed paths: plist at ~/Library/LaunchAgents/${DAEMON_SERVICE}.plist and logs at logs/stdout.log, logs/stderr.log</action>
+      </step>
+      <step order="5">
+        <action>Commit all changes, tag vX.Y.Z, push to origin main, create GitHub release via gh release create, and close the GitHub Milestone</action>
+      </step>
+      <step order="6">
+        <action>Update templates/project_kickstart_template.xml whenever generic architecture or framework improvements are introduced</action>
+      </step>
+    </protocol>
+  </rules_file>
+
+  <!-- 
+    ========================================================================
+    ⚡ EXECUTION & INITIALIZATION PLAN
+    ========================================================================
+  -->
+  <execution_plan>
+    <task order="1">Initialize local git repository and generate .gitignore (excluding .env, node_modules, dist, logs, backups), package.json, tsconfig.json, .env (PORT=${PORT}, DB_NAME=${DB_NAME}), and sanitized .env.example with dummy placeholders</task>
+    <task order="2">Scaffold directory tree: src/main/, src/renderer/, src/locales/, docs/, database/, backups/, templates/, generate a domain-specific 1024x1024 src/renderer/icon.png with manifest.json, and link favicon/apple-touch-icon in index.html and sidebar brand</task>
+    <task order="3">Generate database startup migrations with English RBAC schema (security_roles, permissions, role_permissions) and secure auth fields without hardcoded fallback credentials. Apply OWASP and CIS Database Security Hardening standards.</task>
+    <task order="4">Create GEMINI.md, CHANGELOG.md, docs/Functioneel_Applicatiebeheer_FAM.md, docs/Technisch_Applicatiebeheer_TAM.md, docs/Database_Security_Hardening_Report.md, and docs/ISO27001_Compliance_Report.md at version 1.0.0</task>
+    <task order="5">Build application via npm run build and verify build pipeline output</task>
+    <task order="6">Create .github/dependabot.yml with grouped weekly npm updates (production-dependencies and development-dependencies for minor/patch) with labels 'module: beheer', 'type: enhancement', 'prio: P3-normaal' and commit prefix 'chore(deps)'</task>
+    <task order="7">Check via gh CLI if repository ${GITHUB_REPO} exists; if not, create private repo and push via: gh repo create ${GITHUB_REPO} --private --source=. --remote=origin --push, and enable Dependabot vulnerability alerts &amp; automated security fixes via gh api -X PUT repos/${GITHUB_REPO}/vulnerability-alerts and gh api -X PUT repos/${GITHUB_REPO}/automated-security-fixes</task>
+    <task order="8">Commit all initial files as "feat: initial commit v1.0.0 framework", tag v1.0.0, push tags to origin, and publish GitHub Release via gh release create v1.0.0</task>
+  </execution_plan>
+</project_kickstart_specification>

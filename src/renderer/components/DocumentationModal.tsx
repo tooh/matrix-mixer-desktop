@@ -91,18 +91,19 @@ function MermaidDiagram({ code, id }: { code: string; id: string }) {
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  onOpenScrumModal?: () => void;
 }
 
-type DocTab = 'FAM' | 'TAM' | 'CHANGELOG' | 'OPENAPI';
+type DocTab = 'FAM' | 'TAM' | 'CHANGELOG' | 'OPENAPI' | 'SCRUM';
 
-export const DocumentationModal: React.FC<Props> = ({ isOpen, onClose }) => {
+export const DocumentationModal: React.FC<Props> = ({ isOpen, onClose, onOpenScrumModal }) => {
   const [activeDoc, setActiveDoc] = useState<DocTab>('FAM');
   const [content, setContent] = useState<string>('Loading...');
   const [loading, setLoading] = useState<boolean>(false);
   const [copySuccess, setCopySuccess] = useState<boolean>(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const docFiles: Record<DocTab, string> = {
+  const docFiles: Record<string, string> = {
     FAM: 'Functional_Application_Manual_FAM.md',
     TAM: 'Technical_Application_Manual_TAM.md',
     CHANGELOG: 'CHANGELOG.md',
@@ -110,7 +111,7 @@ export const DocumentationModal: React.FC<Props> = ({ isOpen, onClose }) => {
   };
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || activeDoc === 'SCRUM') return;
 
     setLoading(true);
     apiRequest<{ content: string }>('/api/docs/read', {
@@ -518,13 +519,19 @@ export const DocumentationModal: React.FC<Props> = ({ isOpen, onClose }) => {
             { id: 'FAM', label: '📘 Functional Manual (FAM)' },
             { id: 'TAM', label: '🛠️ Technical Manual (TAM)' },
             { id: 'CHANGELOG', label: '📋 Changelog' },
-            { id: 'OPENAPI', label: '🔌 REST API (OpenAPI)' }
+            { id: 'OPENAPI', label: '🔌 REST API (OpenAPI)' },
+            { id: 'SCRUM', label: '🐞 Scrum Backlog & Meldingen' }
           ].map((tab) => (
             <button
               key={tab.id}
               className={`btn ${activeDoc === tab.id ? 'btn-primary' : ''}`}
               onClick={() => setActiveDoc(tab.id as DocTab)}
-              style={{ whiteSpace: 'nowrap', fontSize: '0.82rem' }}
+              style={{ 
+                whiteSpace: 'nowrap', 
+                fontSize: '0.82rem',
+                color: tab.id === 'SCRUM' && activeDoc !== 'SCRUM' ? '#f59e0b' : undefined,
+                borderColor: tab.id === 'SCRUM' && activeDoc !== 'SCRUM' ? 'rgba(245, 158, 11, 0.4)' : undefined
+              }}
             >
               {tab.label}
             </button>
@@ -541,6 +548,65 @@ export const DocumentationModal: React.FC<Props> = ({ isOpen, onClose }) => {
             <div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-secondary)' }}>
               <div style={{ fontSize: '24px', marginBottom: '8px' }}>⏳</div>
               Loading document...
+            </div>
+          ) : activeDoc === 'SCRUM' ? (
+            <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div style={{ padding: '24px', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '12px', background: 'rgba(255, 255, 255, 0.02)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '14px' }}>
+                  <span style={{ fontSize: '36px' }}>🐙</span>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '1.25rem', color: '#f8fafc', fontWeight: 700 }}>
+                      GitHub Issue Scrum Koppeling
+                    </h3>
+                    <span style={{ fontSize: '0.82rem', color: '#94a3b8' }}>
+                      Repository: <code>tooh/matrix-mixer-desktop</code>
+                    </span>
+                  </div>
+                </div>
+
+                <p style={{ fontSize: '0.9rem', color: '#94a3b8', lineHeight: '1.6', marginBottom: '18px' }}>
+                  Alle bugs, hardware feature requests, audio-verbeteringen en user stories worden direct geregistreerd in de GitHub Issues backlog van MatrixMixer. U kunt direct vanuit de app een nieuwe melding vastleggen of de openstaande sprint-items op GitHub bekijken.
+                </p>
+
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                  <button 
+                    type="button" 
+                    onClick={() => { onClose(); onOpenScrumModal?.(); }}
+                    className="btn btn-primary"
+                    style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 18px', fontSize: '0.9rem', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}
+                  >
+                    <span>🐞 Nieuwe Scrum Melding Loggen</span>
+                  </button>
+                  <a 
+                    href="https://github.com/tooh/matrix-mixer-desktop/issues" 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="btn btn-secondary"
+                    style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 18px', fontSize: '0.9rem', textDecoration: 'none', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.15)', color: '#f8fafc' }}
+                  >
+                    <span>🌐 Bekijk Issues op GitHub ↗</span>
+                  </a>
+                </div>
+              </div>
+
+              <div style={{ padding: '20px', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '12px', background: 'rgba(255, 255, 255, 0.02)' }}>
+                <h4 style={{ margin: '0 0 10px 0', fontSize: '1rem', color: '#818cf8', fontWeight: 600 }}>
+                  Scrum Werkafspraken &amp; Categorieën
+                </h4>
+                <ul style={{ paddingLeft: '20px', fontSize: '0.85rem', color: '#94a3b8', lineHeight: '1.8' }}>
+                  <li><strong>Bugs (🐛):</strong> Vermeld altijd concrete stappen om te reproduceren, de geteste fader/CC parameter en eventuele MIDI monitor output.</li>
+                  <li><strong>Features (✨):</strong> Beschrijf de gewenste hardware- of audio-functionaliteit (bijv. nieuwe layer routing, presets opslag, Wi-Fi latency tweaks).</li>
+                  <li><strong>User Stories (📖):</strong> Formuleer als: <em>"Als [sound engineer / muzikant] wil ik [actie] zodat [waarde]"</em> inclusief acceptatiecriteria.</li>
+                  <li><strong>Prioriteiten:</strong>
+                    <ul style={{ marginTop: '4px' }}>
+                      <li><code>P1 - Kritiek</code>: Blocker, audio playback valt weg, fader communicatie hangt of vastloper.</li>
+                      <li><code>P2 - Hoog</code>: Belangrijke functionaliteit werkt niet conform specificatie (bijv. CC sync of preset recall).</li>
+                      <li><code>P3 - Normaal</code>: Gewenste verbetering, cosmetic issues of niet-blokkerende workflow optimalisatie.</li>
+                      <li><code>P4 - Laag</code>: Kleine styling tweaks of documentatie aanpassingen.</li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
             </div>
           ) : activeDoc === 'OPENAPI' ? (
             <div style={{ maxWidth: '900px', margin: '0 auto' }}>

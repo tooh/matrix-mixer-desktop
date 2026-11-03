@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, session } from 'electron';
+import { app, BrowserWindow, ipcMain, session, shell, Menu, MenuItemConstructorOptions } from 'electron';
 import path from 'path';
 import fs from 'fs';
 
@@ -27,6 +27,156 @@ import { ServerMidi } from '../main/serverMidi';
 
 let mainWindow: BrowserWindow | null = null;
 let serverPort = 3005;
+
+function setupApplicationMenu() {
+  const isMac = process.platform === 'darwin';
+
+  const template: MenuItemConstructorOptions[] = [
+    ...(isMac ? [{
+      label: app.name,
+      submenu: [
+        { role: 'about' as const },
+        { type: 'separator' as const },
+        {
+          label: '🐞 Scrum Melding Vastleggen...',
+          accelerator: 'CommandOrControl+Shift+S',
+          click: () => {
+            mainWindow?.webContents.send('open-scrum-modal');
+          }
+        },
+        { type: 'separator' as const },
+        { role: 'services' as const },
+        { type: 'separator' as const },
+        { role: 'hide' as const },
+        { role: 'hideOthers' as const },
+        { role: 'unhide' as const },
+        { type: 'separator' as const },
+        { role: 'quit' as const }
+      ]
+    }] : []),
+    {
+      label: 'Bestand',
+      submenu: [
+        {
+          label: '💾 Scènes & Presets...',
+          accelerator: 'CommandOrControl+P',
+          click: () => {
+            mainWindow?.webContents.send('open-presets-modal');
+          }
+        },
+        {
+          label: '🎛️ MIDI Apparaat & Kanalen...',
+          accelerator: 'CommandOrControl+M',
+          click: () => {
+            mainWindow?.webContents.send('open-midi-modal');
+          }
+        },
+        { type: 'separator' as const },
+        isMac ? { role: 'close' as const } : { role: 'quit' as const }
+      ]
+    },
+    {
+      label: 'Bewerken',
+      submenu: [
+        { role: 'undo' as const },
+        { role: 'redo' as const },
+        { type: 'separator' as const },
+        { role: 'cut' as const },
+        { role: 'copy' as const },
+        { role: 'paste' as const },
+        { role: 'selectAll' as const }
+      ]
+    },
+    // Dedicated Scrum Menu in top menubar
+    {
+      label: 'Scrum',
+      submenu: [
+        {
+          label: '🐞 Nieuwe Scrum Melding Vastleggen...',
+          accelerator: 'CommandOrControl+Shift+S',
+          click: () => {
+            mainWindow?.webContents.send('open-scrum-modal');
+          }
+        },
+        { type: 'separator' as const },
+        {
+          label: '🌐 Bekijk GitHub Backlog Issues...',
+          click: () => {
+            shell.openExternal('https://github.com/tooh/matrix-mixer-desktop/issues');
+          }
+        }
+      ]
+    },
+    {
+      label: 'Weergave',
+      submenu: [
+        { role: 'reload' as const },
+        { role: 'forceReload' as const },
+        { role: 'toggleDevTools' as const },
+        { type: 'separator' as const },
+        { role: 'resetZoom' as const },
+        { role: 'zoomIn' as const },
+        { role: 'zoomOut' as const },
+        { type: 'separator' as const },
+        { role: 'togglefullscreen' as const }
+      ]
+    },
+    {
+      label: 'Venster',
+      submenu: [
+        { role: 'minimize' as const },
+        { role: 'zoom' as const },
+        ...(isMac ? [
+          { type: 'separator' as const },
+          { role: 'front' as const }
+        ] : [
+          { role: 'close' as const }
+        ])
+      ]
+    },
+    {
+      role: 'help' as const,
+      submenu: [
+        {
+          label: '🐞 Scrum Melding Vastleggen...',
+          accelerator: 'CommandOrControl+Shift+B',
+          click: () => {
+            mainWindow?.webContents.send('open-scrum-modal');
+          }
+        },
+        {
+          label: '📖 Handboeken & Documentatie (FAM/TAM)...',
+          accelerator: 'CommandOrControl+D',
+          click: () => {
+            mainWindow?.webContents.send('open-docs-modal');
+          }
+        },
+        {
+          label: '📱 Stage Wi-Fi Remote Info & QR...',
+          click: () => {
+            mainWindow?.webContents.send('open-wifi-modal');
+          }
+        },
+        { type: 'separator' as const },
+        {
+          label: '🚀 Controleer op Updates...',
+          click: () => {
+            mainWindow?.webContents.send('check-for-updates');
+          }
+        },
+        {
+          label: '🌐 GitHub Repository...',
+          click: () => {
+            shell.openExternal('https://github.com/tooh/matrix-mixer-desktop');
+          }
+        }
+      ]
+    }
+  ];
+
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
+}
 
 async function createWindow() {
   // 1. Start embedded Express server for Wi-Fi clients (iPads / smartphones)
@@ -76,7 +226,7 @@ async function createWindow() {
     title: 'Helix Stadium 1.4 - Matrix Mixer',
     icon: fs.existsSync(iconPath) ? iconPath : undefined,
     backgroundColor: '#0f172a',
-    autoHideMenuBar: true,
+    autoHideMenuBar: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
@@ -84,6 +234,8 @@ async function createWindow() {
       sandbox: false
     }
   });
+
+  setupApplicationMenu();
 
   mainWindow.maximize();
   mainWindow.setFullScreen(true);
@@ -114,6 +266,15 @@ ipcMain.handle('get-network-info', () => {
     primaryIp,
     remoteUrl: `http://${primaryIp}:${serverPort}`
   };
+});
+
+// IPC: Open external link in system default browser (e.g. GitHub Releases)
+ipcMain.handle('open-external', (_event, targetUrl: string) => {
+  if (targetUrl && (targetUrl.startsWith('https://') || targetUrl.startsWith('http://'))) {
+    shell.openExternal(targetUrl);
+    return true;
+  }
+  return false;
 });
 
 // IPC: When Electron's Web MIDI receives incoming MIDI from the physical USB Helix,

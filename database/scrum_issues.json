@@ -1,0 +1,10 @@
+[
+  {
+    "issueNumber": 1,
+    "url": "https://github.com/tooh/matrix-mixer-desktop/issues/1",
+    "title": "[MIDI] Auto-select Helix Stadium over Roland and persist device selection",
+    "body": "Bij het openen van de MIDI-instellingen selecteert de applicatie standaard Roland E-28 in plaats van Helix Stadium XL, omdat Roland als eerste in de hardwarelijst voorkomt en de geselecteerde outputpoort niet persistent werd opgeslagen.",
+    "labels": ["type: bug", "prio: P2-hoog", "module: midi"],
+    "createdAt": "2026-11-02T11:36:36.000Z"
+  }
+]

@@ -13,7 +13,7 @@ import { TrackRenameModal } from './TrackRenameModal';
 import { StageWifiModal } from './StageWifiModal';
 
 declare const __APP_VERSION__: string;
-const APP_VERSION = '1.9.0';
+const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '1.9.2';
 
 export type ChannelBankId = 'stems' | 'all' | 'paths' | 'aux' | 'vocal' | 'rhythm';
 
@@ -115,6 +115,27 @@ export const App: React.FC = () => {
   useEffect(() => {
     presetsRef.current = presets;
   }, [presets]);
+
+  // Listen for native macOS Electron Menu choices & Keyboard Shortcuts (Cmd+Shift+S)
+  useEffect(() => {
+    const api = (window as any).electronAPI;
+    if (api) {
+      if (api.onOpenScrumModal) api.onOpenScrumModal(() => setShowScrumModal(true));
+      if (api.onOpenDocsModal) api.onOpenDocsModal(() => setShowDocsModal(true));
+      if (api.onOpenWifiModal) api.onOpenWifiModal(() => setShowWifiModal(true));
+      if (api.onOpenPresetsModal) api.onOpenPresetsModal(() => setShowPresetsModal(true));
+      if (api.onOpenMidiModal) api.onOpenMidiModal(() => setShowMidiModal(true));
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === 'S' || e.key === 's')) {
+        e.preventDefault();
+        setShowScrumModal(true);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
   const [user, setUser] = useState<UserSession | null>(null);
   const [lockedLayer, setLockedLayer] = useState<boolean>(false);
 
@@ -188,14 +209,34 @@ export const App: React.FC = () => {
   const [toast, setToast] = useState<ToastState | null>(null);
   const toastTimerRef = useRef<any>(null);
 
-  // PWA Version Update Management
+  // PWA & Desktop Version Update Management
   const [updateAvailable, setUpdateAvailable] = useState<string | null>(null);
+  const [updateUrl, setUpdateUrl] = useState<string>('https://github.com/tooh/matrix-mixer-desktop/releases');
   const [dismissedUpdate, setDismissedUpdate] = useState<boolean>(false);
 
-  // Check for PWA updates by querying /version.txt on mount, periodically, and on focus
+  // Check for updates (both remote GitHub releases/repository and local /version.txt)
   useEffect(() => {
     const checkForUpdates = async () => {
       try {
+        // 1. Check server update checker (queries GitHub releases/repo)
+        const updateRes = await fetch('/api/system/check-update');
+        if (updateRes.ok) {
+          const updateData = await updateRes.json();
+          if (updateData.updateAvailable && updateData.latestVersion) {
+            console.log(`[Update Checker] Remote update available: v${updateData.latestVersion} (current: v${APP_VERSION})`);
+            setUpdateAvailable(updateData.latestVersion);
+            if (updateData.releaseUrl) {
+              setUpdateUrl(updateData.releaseUrl);
+            }
+            return;
+          }
+        }
+      } catch (err) {
+        // Fallback to local /version.txt
+      }
+
+      try {
+        // 2. Check local /version.txt (primarily for PWA clients on iPad/Safari)
         const response = await fetch('/version.txt?t=' + Date.now());
         if (response.ok) {
           const serverVersion = (await response.text()).trim();
@@ -205,7 +246,7 @@ export const App: React.FC = () => {
           }
         }
       } catch (err) {
-        console.warn('Failed to check for PWA updates:', err);
+        console.warn('Failed to check for updates:', err);
       }
     };
 
@@ -245,6 +286,18 @@ export const App: React.FC = () => {
   }, []);
 
   const handleForceUpdate = async () => {
+    // If running in Desktop Electron app, open the GitHub release / download page
+    if ((window as any).electronAPI) {
+      const target = updateUrl || 'https://github.com/tooh/matrix-mixer-desktop/releases';
+      if ((window as any).electronAPI.openExternal) {
+        (window as any).electronAPI.openExternal(target);
+      } else {
+        window.open(target, '_blank');
+      }
+      return;
+    }
+
+    // PWA flow: unregister service worker and hard-reload
     if ('serviceWorker' in navigator) {
       try {
         const registrations = await navigator.serviceWorker.getRegistrations();
@@ -951,12 +1004,26 @@ export const App: React.FC = () => {
           </button>
 
           {/* Docs & Scrum for desktop / tablet */}
-          <button className="btn btn-secondary-action" onClick={() => setShowDocsModal(true)} title="Manuals & API Specs">
+          <button className="btn btn-secondary-action" onClick={() => setShowDocsModal(true)} title="Handboeken, FAM, TAM & Documentatie">
             📖 Docs
           </button>
 
-          <button className="btn btn-secondary-action" onClick={() => setShowScrumModal(true)} title="GitHub Scrum Issue Reporter">
-            🐞 Scrum
+          <button 
+            className="btn btn-scrum" 
+            onClick={() => setShowScrumModal(true)} 
+            title="GitHub Scrum Melding Vastleggen (Cmd+Shift+S)"
+            style={{
+              borderColor: 'rgba(245, 158, 11, 0.5)',
+              color: '#f59e0b',
+              background: 'rgba(245, 158, 11, 0.12)',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+          >
+            <span>🐞</span>
+            <span>Scrum Melding</span>
           </button>
 
           {/* User profile with RBAC badge */}
@@ -1161,6 +1228,7 @@ export const App: React.FC = () => {
       <DocumentationModal
         isOpen={showDocsModal}
         onClose={() => setShowDocsModal(false)}
+        onOpenScrumModal={() => setShowScrumModal(true)}
       />
 
       <ScrumIssueModal

@@ -1,9 +1,43 @@
 import { execFile, spawn, ChildProcess } from 'child_process';
 import { promisify } from 'util';
 import fs from 'fs';
+import path from 'path';
 import { Response } from 'express';
 
 const execFileAsync = promisify(execFile);
+
+function getSettingsPath(): string {
+  const dir = process.env.APP_DATA_DIR || path.resolve(process.cwd(), 'database');
+  if (!fs.existsSync(dir)) {
+    try { fs.mkdirSync(dir, { recursive: true }); } catch (e) {}
+  }
+  return path.join(dir, 'settings.json');
+}
+
+function loadMidiDeviceSetting(): string | null {
+  try {
+    const file = getSettingsPath();
+    if (fs.existsSync(file)) {
+      const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+      return data.activeMidiDevice || null;
+    }
+  } catch (e) {}
+  return null;
+}
+
+function saveMidiDeviceSetting(device: string) {
+  try {
+    const file = getSettingsPath();
+    let current: any = {};
+    if (fs.existsSync(file)) {
+      try { current = JSON.parse(fs.readFileSync(file, 'utf8')); } catch (e) {}
+    }
+    current.activeMidiDevice = device;
+    fs.writeFileSync(file, JSON.stringify(current, null, 2), 'utf8');
+  } catch (e) {
+    console.warn('[ServerMidi] Could not save midi device setting:', e);
+  }
+}
 
 function resolveSendMidiPath(): string {
   if (process.env.SENDMIDI_PATH && fs.existsSync(process.env.SENDMIDI_PATH)) {
@@ -77,14 +111,16 @@ class ServerMidiService {
 
       this.availableDevices = list;
 
-      // Auto-select Helix or Stadium if found
-      if (!this.activeDevice || !list.includes(this.activeDevice)) {
-        const helix = list.find(d => /helix|stadium/i.test(d));
-        if (helix) {
-          this.activeDevice = helix;
-        } else if (list.length > 0) {
-          this.activeDevice = list[0];
-        }
+      const savedDev = loadMidiDeviceSetting();
+      const helix = list.find(d => /helix|stadium/i.test(d));
+
+      if (savedDev && list.includes(savedDev)) {
+        this.activeDevice = savedDev;
+      } else if (helix) {
+        // Helix Stadium is always strictly prioritized over generic MIDI devices (e.g. Roland, IAC)
+        this.activeDevice = helix;
+      } else if (!this.activeDevice || !list.includes(this.activeDevice)) {
+        this.activeDevice = list[0] || '';
       }
 
       return list;
@@ -100,6 +136,7 @@ class ServerMidiService {
 
   setActiveDevice(device: string) {
     this.activeDevice = device;
+    saveMidiDeviceSetting(device);
     this.startIngress();
   }
 

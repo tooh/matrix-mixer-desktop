@@ -1,13 +1,15 @@
 {
   "name": "matrix-mixer-desktop",
-  "version": "1.9.0",
+  "version": "1.9.2",
   "description": "Helix Stadium 1.4 Matrix Mixer Desktop & Stage Wi-Fi Hub",
   "main": "dist/electron/main.js",
   "scripts": {
     "build": "node build.js",
+    "build:install": "node build.js --install",
     "dev": "node build.js --watch",
     "start": "electron .",
     "dist:mac": "node build.js && electron-builder --mac",
+    "dist:install": "node build.js --install",
     "dist:win": "node build.js && electron-builder --win --x64",
     "dist:all": "node build.js && electron-builder -mw",
     "install:local": "node scripts/install-dmg.js"

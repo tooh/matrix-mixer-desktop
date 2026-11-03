@@ -1,60 +1,55 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const http = require('http');
 
 const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8'));
 const version = pkg.version;
 const dmgPath = path.resolve(__dirname, `../release/Helix Matrix Mixer-${version}-arm64.dmg`);
+const directAppPath = path.resolve(__dirname, '../release/mac-arm64/Helix Matrix Mixer.app');
+const targetApp = '/Applications/Helix Matrix Mixer.app';
 
 console.log(`\n=======================================================`);
-console.log(`🚀 Installing Helix Matrix Mixer v${version} from DMG...`);
+console.log(`🚀 Installing Helix Matrix Mixer v${version} to /Applications...`);
 console.log(`=======================================================`);
-
-if (!fs.existsSync(dmgPath)) {
-  console.error(`❌ DMG file not found at: ${dmgPath}`);
-  console.error(`Please run 'npm run dist:mac' first.`);
-  process.exit(1);
-}
 
 // 1. Terminate existing running instances of Helix Matrix Mixer
 console.log('1️⃣  Stopping existing Helix Matrix Mixer instances...');
 try {
-  execSync('pkill -f "Helix Matrix Mixer" || true', { stdio: 'inherit' });
-  // Small delay to allow port 3005 release
-  execSync('sleep 1');
+  execSync('osascript -e \'quit app "Helix Matrix Mixer"\' 2>/dev/null || true');
+  execSync('killall "Helix Matrix Mixer" 2>/dev/null || true');
+  execSync('sleep 1.5');
 } catch (e) {
   // Ignore
 }
 
-// 2. Mount DMG
-console.log(`2️⃣  Mounting DMG: ${path.basename(dmgPath)}...`);
-let mountOutput = '';
-try {
-  mountOutput = execSync(`hdiutil attach "${dmgPath}" -nobrowse`, { encoding: 'utf8' });
-} catch (e) {
-  console.error('❌ Failed to mount DMG:', e);
-  process.exit(1);
+let sourceApp = '';
+let mountPoint = '';
+
+if (fs.existsSync(dmgPath)) {
+  console.log(`2️⃣  Mounting DMG: ${path.basename(dmgPath)}...`);
+  try {
+    const mountOutput = execSync(`hdiutil attach "${dmgPath}" -nobrowse`, { encoding: 'utf8' });
+    const lines = mountOutput.trim().split('\n');
+    const mountLine = lines.find(l => l.includes('/Volumes/'));
+    if (mountLine) {
+      mountPoint = mountLine.substring(mountLine.indexOf('/Volumes/')).trim();
+      sourceApp = path.join(mountPoint, 'Helix Matrix Mixer.app');
+      console.log(`   Mounted at: ${mountPoint}`);
+    }
+  } catch (e) {
+    console.warn('⚠️ Could not mount DMG, falling back to direct app bundle if available:', e.message);
+  }
 }
 
-// Extract mount point (e.g. /Volumes/Helix Matrix Mixer 1.9.0-arm64)
-const lines = mountOutput.trim().split('\n');
-const mountLine = lines.find(l => l.includes('/Volumes/'));
-if (!mountLine) {
-  console.error('❌ Could not find mount point in hdiutil output:', mountOutput);
-  process.exit(1);
-}
-
-const mountPoint = mountLine.substring(mountLine.indexOf('/Volumes/')).trim();
-console.log(`   Mounted at: ${mountPoint}`);
-
-const sourceApp = path.join(mountPoint, 'Helix Matrix Mixer.app');
-const targetApp = '/Applications/Helix Matrix Mixer.app';
-
-if (!fs.existsSync(sourceApp)) {
-  console.error(`❌ Could not find application at: ${sourceApp}`);
-  execSync(`hdiutil detach "${mountPoint}" || true`);
-  process.exit(1);
+if (!sourceApp || !fs.existsSync(sourceApp)) {
+  if (fs.existsSync(directAppPath)) {
+    console.log(`2️⃣  Using compiled application bundle from: ${directAppPath}`);
+    sourceApp = directAppPath;
+  } else {
+    console.error(`❌ Neither DMG (${dmgPath}) nor compiled app bundle (${directAppPath}) was found.`);
+    console.error(`Please run 'npm run dist:mac' or 'node build.js --install' first.`);
+    process.exit(1);
+  }
 }
 
 // 3. Install to /Applications
@@ -65,16 +60,20 @@ try {
   console.log('   Copied successfully!');
 } catch (e) {
   console.error('❌ Failed to copy application to /Applications:', e);
-  execSync(`hdiutil detach "${mountPoint}" || true`);
+  if (mountPoint) execSync(`hdiutil detach "${mountPoint}" || true`, { stdio: 'ignore' });
   process.exit(1);
 }
 
-// 4. Detach DMG
-console.log('4️⃣  Detaching DMG...');
-try {
-  execSync(`hdiutil detach "${mountPoint}"`, { stdio: 'ignore' });
-} catch (e) {
-  console.warn('⚠️ Warning: Could not detach DMG volume cleanly:', e.message);
+// 4. Detach DMG if mounted
+if (mountPoint) {
+  console.log('4️⃣  Detaching DMG...');
+  try {
+    execSync(`hdiutil detach "${mountPoint}"`, { stdio: 'ignore' });
+  } catch (e) {
+    console.warn('⚠️ Warning: Could not detach DMG volume cleanly:', e.message);
+  }
+} else {
+  console.log('4️⃣  (Direct app bundle install, no DMG unmount needed)');
 }
 
 // 5. Clear quarantine attributes

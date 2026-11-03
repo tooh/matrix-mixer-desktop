@@ -12,5 +12,21 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   sendMidiIngress: (data: { channel: number; cc?: number; program?: number; value?: number; type: 'cc' | 'pc' }) => {
     ipcRenderer.send('midi-ingress-received', data);
+  },
+  openExternal: (url: string) => ipcRenderer.invoke('open-external', url),
+  onOpenScrumModal: (callback: () => void) => {
+    ipcRenderer.on('open-scrum-modal', () => callback());
+  },
+  onOpenDocsModal: (callback: () => void) => {
+    ipcRenderer.on('open-docs-modal', () => callback());
+  },
+  onOpenWifiModal: (callback: () => void) => {
+    ipcRenderer.on('open-wifi-modal', () => callback());
+  },
+  onOpenPresetsModal: (callback: () => void) => {
+    ipcRenderer.on('open-presets-modal', () => callback());
+  },
+  onOpenMidiModal: (callback: () => void) => {
+    ipcRenderer.on('open-midi-modal', () => callback());
   }
 });

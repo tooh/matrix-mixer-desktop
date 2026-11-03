@@ -6,8 +6,8 @@ type LogListener = (event: MidiMessageEvent) => void;
 
 class MidiService {
   private midiAccess: any = null;
-  private selectedInputId: string = 'all';
-  private selectedOutputId: string = '';
+  private selectedInputId: string = typeof localStorage !== 'undefined' ? (localStorage.getItem('matrix_midi_input_id') || 'all') : 'all';
+  private selectedOutputId: string = typeof localStorage !== 'undefined' ? (localStorage.getItem('matrix_midi_output_id') || '') : '';
   private listeners: Set<MidiListener> = new Set();
   private pcListeners: Set<PcListener> = new Set();
   private logListeners: Set<LogListener> = new Set();
@@ -39,7 +39,18 @@ class MidiService {
       this.setupPorts();
 
       this.midiAccess.onstatechange = () => {
-        this.setupPorts();
+        const outputs = this.getOutputs();
+        const currentPort = outputs.find(o => o.id === this.selectedOutputId);
+        const isCurrentHelix = currentPort && /helix|stadium/i.test(currentPort.name);
+        const helixOut = outputs.find(o => /helix|stadium/i.test(o.name));
+
+        // Auto-promote to Helix Stadium if it connects and current selection is not Helix
+        if (!isCurrentHelix && helixOut) {
+          console.log(`[MIDI] Detected Helix Stadium (${helixOut.name}), auto-connecting.`);
+          this.selectOutput(helixOut.id, true);
+        } else {
+          this.setupPorts();
+        }
       };
 
       // 3. Connect to Electron IPC if running as Desktop app
@@ -114,17 +125,35 @@ class MidiService {
     if (!this.midiAccess) return;
 
     const outputs = this.getOutputs();
+    const inputs = this.getInputs();
 
-    // Default to 'all' so every connected device is monitored without manual configuration
-    if (!this.selectedInputId || this.selectedInputId === 'all') {
-      this.selectInput('all');
+    // 1. Setup Input: check saved or default to 'all'
+    const savedIn = typeof localStorage !== 'undefined' ? localStorage.getItem('matrix_midi_input_id') : null;
+    if (savedIn && (savedIn === 'all' || inputs.some(i => i.id === savedIn))) {
+      this.selectInput(savedIn, false);
     } else {
-      this.selectInput(this.selectedInputId);
+      this.selectInput('all', false);
     }
 
-    if (!this.selectedOutputId && outputs.length > 0) {
-      const helixOut = outputs.find(o => o.name.toLowerCase().includes('helix') || o.name.toLowerCase().includes('stadium'));
-      this.selectOutput(helixOut ? helixOut.id : outputs[0].id);
+    // 2. Setup Output:
+    // Priority 1: User explicitly saved output that is currently connected
+    // Priority 2: Line 6 Helix / Stadium port
+    // Priority 3: Fallback to first available port
+    const savedOutId = typeof localStorage !== 'undefined' ? localStorage.getItem('matrix_midi_output_id') : null;
+    const savedOutName = typeof localStorage !== 'undefined' ? localStorage.getItem('matrix_midi_output_name') : null;
+
+    const savedPort = outputs.find(o => o.id === savedOutId || (savedOutName && o.name === savedOutName));
+    const helixOut = outputs.find(o => /helix|stadium/i.test(o.name));
+
+    if (savedPort) {
+      this.selectOutput(savedPort.id, false);
+    } else if (helixOut) {
+      // Helix Stadium is always strictly prioritized over Roland, IAC or other devices
+      this.selectOutput(helixOut.id, true);
+    } else if (outputs.length > 0) {
+      if (!outputs.some(o => o.id === this.selectedOutputId)) {
+        this.selectOutput(outputs[0].id, false);
+      }
     }
   }
 
@@ -156,7 +185,7 @@ class MidiService {
     return ports;
   }
 
-  selectInput(portId: string) {
+  selectInput(portId: string, persist: boolean = true) {
     if (!this.midiAccess) return;
 
     // Detach previous
@@ -165,6 +194,9 @@ class MidiService {
     });
 
     this.selectedInputId = portId;
+    if (persist && typeof localStorage !== 'undefined') {
+      localStorage.setItem('matrix_midi_input_id', portId);
+    }
 
     if (portId === 'all') {
       let count = 0;
@@ -182,11 +214,15 @@ class MidiService {
     }
   }
 
-  selectOutput(portId: string) {
+  selectOutput(portId: string, persist: boolean = true) {
     this.selectedOutputId = portId;
     if (this.midiAccess) {
       const port = this.midiAccess.outputs.get(portId);
       if (port) {
+        if (persist && typeof localStorage !== 'undefined') {
+          localStorage.setItem('matrix_midi_output_id', portId);
+          localStorage.setItem('matrix_midi_output_name', port.name);
+        }
         this.log('out', 0, 0, 0, `MIDI Egress attached to: ${port.name}`);
       }
     }
