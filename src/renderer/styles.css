@@ -892,29 +892,75 @@ body {
 
 .fader-track-ticks {
   position: absolute;
-  left: 6px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  font-size: 8px;
-  color: var(--text-muted);
+  left: 4px;
+  top: 10px;
+  bottom: 10px;
+  width: 28px;
+  height: 180px;
   pointer-events: none;
 }
 
-.fader-track-ticks .tick-zero {
-  pointer-events: auto;
+.fader-tick-item {
+  position: absolute;
+  right: 0;
+  transform: translateY(50%);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 7.5px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+  font-weight: 500;
+  color: #64748b;
   cursor: pointer;
-  color: #38bdf8;
-  font-weight: 700;
-  border-radius: 2px;
-  padding: 1px 2px;
-  transition: all 0.15s ease;
+  pointer-events: auto;
+  user-select: none;
+  transition: all 0.12s ease;
+  line-height: 1;
+  padding: 1px 0;
 }
 
-.fader-track-ticks .tick-zero:hover {
-  background: rgba(56, 189, 248, 0.25);
+.fader-tick-item:hover {
+  color: #f1f5f9;
+}
+
+.fader-tick-item:hover .tick-mark-line {
+  background: #38bdf8;
+  width: 6px;
+  box-shadow: 0 0 4px rgba(56, 189, 248, 0.6);
+}
+
+.fader-tick-item.tick-boost {
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.fader-tick-item.tick-boost:hover {
   color: #ffffff;
+}
+
+.fader-tick-item.tick-zero {
+  color: #38bdf8;
+  font-weight: 700;
+}
+
+.fader-tick-item.tick-zero:hover {
+  color: #7dd3fc;
+}
+
+.tick-mark-line {
+  display: inline-block;
+  width: 4px;
+  height: 1px;
+  background: #334155;
+  margin-left: 3px;
+  transition: all 0.12s ease;
+  flex-shrink: 0;
+}
+
+.fader-tick-item.tick-zero .tick-mark-line {
+  background: #38bdf8;
+  width: 5px;
+  height: 1.5px;
 }
 
 .fader-vertical {

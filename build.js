@@ -8,7 +8,7 @@ const install = process.argv.includes('--install');
 
 const pkgPath = path.join(__dirname, 'package.json');
 const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-const VERSION = pkg.version || '1.9.1';
+const VERSION = pkg.version || '1.9.3';
 
 function copyFile(src, dest) {
   if (!fs.existsSync(src)) return;
@@ -49,7 +49,13 @@ function copyAssets() {
 
   copyFile('src/renderer/styles.css', 'dist/renderer/styles.css');
   copyFile('src/renderer/manifest.json', 'dist/renderer/manifest.json');
-  copyFile('src/renderer/sw.js', 'dist/renderer/sw.js');
+  if (fs.existsSync('src/renderer/sw.js')) {
+    let swJs = fs.readFileSync('src/renderer/sw.js', 'utf8');
+    swJs = swJs.replace(/const CACHE_NAME = '[^']*';/, `const CACHE_NAME = 'matrixmixer-cache-v${VERSION}';`);
+    fs.writeFileSync('dist/renderer/sw.js', swJs, 'utf8');
+    fs.writeFileSync('src/renderer/sw.js', swJs, 'utf8');
+    console.log(`Updated sw.js with CACHE_NAME v${VERSION}`);
+  }
   copyFile('src/renderer/icon.png', 'dist/renderer/icon.png');
   copyDir('src/renderer/assets', 'dist/renderer/assets');
 
