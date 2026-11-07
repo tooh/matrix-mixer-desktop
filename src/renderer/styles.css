@@ -996,8 +996,14 @@ body {
 
 .fader-vertical {
   -webkit-appearance: none;
-  transform: rotate(-90deg);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(-90deg);
   width: var(--fader-length);
+  min-width: var(--fader-length);
+  max-width: var(--fader-length);
+  flex-shrink: 0;
   height: 12px;
   background: var(--fader-track);
   border: 1px solid #334155;
@@ -1005,6 +1011,7 @@ body {
   outline: none;
   cursor: pointer;
   touch-action: pan-x;
+  z-index: 2;
 }
 
 .fader-vertical::-webkit-slider-thumb {
