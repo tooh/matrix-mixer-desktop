@@ -21,6 +21,7 @@
 
   --fader-thumb: #cbd5e1;
   --fader-track: #090d16;
+  --fader-length: 240px;
   --meter-green: #22c55e;
   --meter-yellow: #eab308;
   --meter-red: #ef4444;
@@ -270,6 +271,29 @@ body {
 
 /* RESPONSIVE LAYOUT FOR MOBILE / IPHONE */
 @media (max-width: 850px) {
+  :root {
+    --fader-length: 300px;
+  }
+
+  .mixer-container {
+    padding: 8px 6px;
+    overflow-y: auto;
+  }
+
+  .channel-strip {
+    min-width: 76px;
+    max-width: 140px;
+  }
+
+  .fader-track-ticks {
+    padding: 14px 0 !important;
+  }
+
+  .fader-vertical::-webkit-slider-thumb {
+    width: 28px !important;
+    height: 38px !important;
+  }
+
   .navbar {
     padding: 6px 10px;
     gap: 6px;
@@ -886,18 +910,25 @@ body {
   align-items: center;
   justify-content: center;
   position: relative;
-  min-height: 180px;
-  padding: 10px 0;
+  min-height: calc(var(--fader-length) + 16px);
+  padding: 8px 0;
 }
 
 .fader-track-ticks {
   position: absolute;
   left: 4px;
-  top: 10px;
-  bottom: 10px;
+  top: calc(50% - (var(--fader-length) / 2));
+  height: var(--fader-length);
+  padding: 13px 0;
+  box-sizing: border-box;
   width: 28px;
-  height: 180px;
   pointer-events: none;
+}
+
+.fader-ticks-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 .fader-tick-item {
@@ -966,19 +997,20 @@ body {
 .fader-vertical {
   -webkit-appearance: none;
   transform: rotate(-90deg);
-  width: 180px;
-  height: 10px;
+  width: var(--fader-length);
+  height: 12px;
   background: var(--fader-track);
   border: 1px solid #334155;
-  border-radius: 5px;
+  border-radius: 6px;
   outline: none;
   cursor: pointer;
+  touch-action: pan-x;
 }
 
 .fader-vertical::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 24px;
-  height: 28px;
+  width: 26px;
+  height: 32px;
   border-radius: 4px;
   background: linear-gradient(180deg, #f1f5f9 0%, #94a3b8 50%, #475569 100%);
   border: 1px solid #ffffff;

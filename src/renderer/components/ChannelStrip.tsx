@@ -121,15 +121,15 @@ export function levelToDb(val: number): string {
 }
 
 const FADER_TICKS = [
-  { dbLabel: '+6', level: 127, bottomPct: 93.3, isBoost: true },
-  { dbLabel: '+4', level: 118, bottomPct: 87.2, isBoost: true },
-  { dbLabel: '+2', level: 109, bottomPct: 81.0, isBoost: true },
-  { dbLabel: '0', level: 100, bottomPct: 74.9, isZero: true },
-  { dbLabel: '-6', level: 88, bottomPct: 66.7 },
-  { dbLabel: '-12', level: 75, bottomPct: 57.8 },
-  { dbLabel: '-18', level: 63, bottomPct: 49.7 },
-  { dbLabel: '-30', level: 38, bottomPct: 32.6 },
-  { dbLabel: '-∞', level: 0, bottomPct: 6.7 },
+  { dbLabel: '+6', level: 127, bottomPct: 100, isBoost: true },
+  { dbLabel: '+4', level: 118, bottomPct: 92.9, isBoost: true },
+  { dbLabel: '+2', level: 109, bottomPct: 85.8, isBoost: true },
+  { dbLabel: '0', level: 100, bottomPct: 78.7, isZero: true },
+  { dbLabel: '-6', level: 88, bottomPct: 69.3 },
+  { dbLabel: '-12', level: 75, bottomPct: 59.1 },
+  { dbLabel: '-18', level: 63, bottomPct: 49.6 },
+  { dbLabel: '-30', level: 38, bottomPct: 29.9 },
+  { dbLabel: '-∞', level: 0, bottomPct: 0 },
 ];
 
 function panToText(pan: number): string {
@@ -300,18 +300,20 @@ export const ChannelStrip: React.FC<Props> = ({
       {/* Fader Area */}
       <div className="strip-fader-area">
         <div className="fader-track-ticks" onDoubleClick={handleResetLevel}>
-          {FADER_TICKS.map((t) => (
-            <div
-              key={t.dbLabel}
-              className={`fader-tick-item ${t.isBoost ? 'tick-boost' : ''} ${t.isZero ? 'tick-zero' : ''}`}
-              style={{ bottom: `${t.bottomPct}%` }}
-              onClick={(e) => handleTickClick(e, t.level, t.isZero)}
-              title={t.isZero ? `Klik om te resetten naar ${levelToDb(defaultLvl)}` : `Instellen op ${t.dbLabel} dB (${levelToDb(t.level)})`}
-            >
-              <span className="tick-label">{t.dbLabel}</span>
-              <span className="tick-mark-line" />
-            </div>
-          ))}
+          <div className="fader-ticks-inner">
+            {FADER_TICKS.map((t) => (
+              <div
+                key={t.dbLabel}
+                className={`fader-tick-item ${t.isBoost ? 'tick-boost' : ''} ${t.isZero ? 'tick-zero' : ''}`}
+                style={{ bottom: `${t.bottomPct}%` }}
+                onClick={(e) => handleTickClick(e, t.level, t.isZero)}
+                title={t.isZero ? `Klik om te resetten naar ${levelToDb(defaultLvl)}` : `Instellen op ${t.dbLabel} dB (${levelToDb(t.level)})`}
+              >
+                <span className="tick-label">{t.dbLabel}</span>
+                <span className="tick-mark-line" />
+              </div>
+            ))}
+          </div>
         </div>
         <input
           type="range"
