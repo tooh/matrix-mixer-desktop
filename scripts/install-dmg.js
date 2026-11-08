@@ -17,6 +17,7 @@ console.log('1️⃣  Stopping existing Helix Matrix Mixer instances...');
 try {
   execSync('osascript -e \'quit app "Helix Matrix Mixer"\' 2>/dev/null || true');
   execSync('killall "Helix Matrix Mixer" 2>/dev/null || true');
+  execSync('lsof -ti:3005 | xargs kill -9 2>/dev/null || true');
   execSync('sleep 1.5');
 } catch (e) {
   // Ignore

@@ -1,5 +1,14 @@
 [
   {
+    "timestamp": "2026-11-07T14:43:40.322Z",
+    "action": "USER_LOGIN",
+    "details": {
+      "userId": "usr-pin-admin",
+      "role": "ADMIN",
+      "method": "PIN"
+    }
+  },
+  {
     "timestamp": "2026-10-19T10:08:06.684Z",
     "action": "PRESET_DELETED",
     "details": {
