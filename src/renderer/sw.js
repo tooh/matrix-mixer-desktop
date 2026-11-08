@@ -1,4 +1,4 @@
-const CACHE_NAME = 'matrixmixer-cache-v1.9.5';
+const CACHE_NAME = 'matrixmixer-cache-v1.9.6';
 
 const ASSETS = [
   '/',
@@ -8,6 +8,12 @@ const ASSETS = [
   '/manifest.json',
   '/icon.png'
 ];
+
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
 
 self.addEventListener('install', (e) => {
   e.waitUntil(

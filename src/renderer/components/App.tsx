@@ -13,7 +13,7 @@ import { TrackRenameModal } from './TrackRenameModal';
 import { StageWifiModal } from './StageWifiModal';
 
 declare const __APP_VERSION__: string;
-const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '1.9.5';
+const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '1.9.6';
 
 export type ChannelBankId = 'stems' | 'all' | 'paths' | 'aux' | 'vocal' | 'rhythm';
 
@@ -297,31 +297,29 @@ export const App: React.FC = () => {
       return;
     }
 
-    // PWA flow: unregister service worker and hard-reload
+    // PWA safe update flow (avoids iOS WebKit unregister race condition that causes 504 Gateway Timeout)
+    triggerToast('⏳ Updating MatrixMixer to latest version...');
+
     if ('serviceWorker' in navigator) {
       try {
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        for (const registration of registrations) {
-          if (registration.waiting) {
-            registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+        const reg = await navigator.serviceWorker.getRegistration();
+        if (reg) {
+          if (reg.waiting) {
+            reg.waiting.postMessage({ type: 'SKIP_WAITING' });
           }
-          await registration.unregister();
+          await reg.update();
         }
       } catch (err) {
-        console.error('Failed to unregister service worker:', err);
+        console.warn('[PWA Update] Worker update notice:', err);
       }
     }
-    if ('caches' in window) {
-      try {
-        const keys = await caches.keys();
-        for (const key of keys) {
-          await caches.delete(key);
-        }
-      } catch (err) {
-        console.error('Failed to clear caches:', err);
-      }
-    }
-    window.location.reload();
+
+    // Cache-busting navigation: fetches fresh HTML directly without clearing the offline safety net
+    setTimeout(() => {
+      const target = new URL(window.location.href);
+      target.searchParams.set('v', String(Date.now()));
+      window.location.replace(target.toString());
+    }, 250);
   };
 
   const triggerToast = useCallback(
