@@ -13,7 +13,17 @@ import { TrackRenameModal } from './TrackRenameModal';
 import { StageWifiModal } from './StageWifiModal';
 
 declare const __APP_VERSION__: string;
-const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '1.9.6';
+const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '1.9.7';
+
+function isVersionNewer(remote: string, current: string): boolean {
+  if (!remote || !current || remote === current) return false;
+  const parse = (v: string) => v.replace(/^v/, '').split('.').map(n => parseInt(n, 10) || 0);
+  const [rMaj = 0, rMin = 0, rPatch = 0] = parse(remote);
+  const [cMaj = 0, cMin = 0, cPatch = 0] = parse(current);
+  if (rMaj !== cMaj) return rMaj > cMaj;
+  if (rMin !== cMin) return rMin > cMin;
+  return rPatch > cPatch;
+}
 
 export type ChannelBankId = 'stems' | 'all' | 'paths' | 'aux' | 'vocal' | 'rhythm';
 
@@ -222,7 +232,7 @@ export const App: React.FC = () => {
         const updateRes = await fetch('/api/system/check-update');
         if (updateRes.ok) {
           const updateData = await updateRes.json();
-          if (updateData.updateAvailable && updateData.latestVersion) {
+          if (updateData.updateAvailable && updateData.latestVersion && isVersionNewer(updateData.latestVersion, APP_VERSION)) {
             console.log(`[Update Checker] Remote update available: v${updateData.latestVersion} (current: v${APP_VERSION})`);
             setUpdateAvailable(updateData.latestVersion);
             if (updateData.releaseUrl) {
@@ -240,14 +250,18 @@ export const App: React.FC = () => {
         const response = await fetch('/version.txt?t=' + Date.now());
         if (response.ok) {
           const serverVersion = (await response.text()).trim();
-          if (serverVersion && serverVersion !== APP_VERSION) {
+          if (serverVersion && isVersionNewer(serverVersion, APP_VERSION)) {
             console.log(`[PWA Update] Update available! Local: ${APP_VERSION}, Server: ${serverVersion}`);
             setUpdateAvailable(serverVersion);
+            return;
           }
         }
       } catch (err) {
         console.warn('Failed to check for updates:', err);
       }
+
+      // If no strictly newer version is available, clear any update notification
+      setUpdateAvailable(null);
     };
 
     checkForUpdates();
@@ -286,20 +300,9 @@ export const App: React.FC = () => {
   }, []);
 
   const handleForceUpdate = async () => {
-    // If running in Desktop Electron app, open the GitHub release / download page
-    if ((window as any).electronAPI) {
-      const target = updateUrl || 'https://github.com/tooh/matrix-mixer-desktop/releases';
-      if ((window as any).electronAPI.openExternal) {
-        (window as any).electronAPI.openExternal(target);
-      } else {
-        window.open(target, '_blank');
-      }
-      return;
-    }
-
-    // PWA safe update flow (avoids iOS WebKit unregister race condition that causes 504 Gateway Timeout)
     triggerToast('⏳ Updating MatrixMixer to latest version...');
 
+    // PWA & Service Worker clean update (avoids iOS WebKit 504 Gateway Timeout)
     if ('serviceWorker' in navigator) {
       try {
         const reg = await navigator.serviceWorker.getRegistration();
@@ -310,16 +313,16 @@ export const App: React.FC = () => {
           await reg.update();
         }
       } catch (err) {
-        console.warn('[PWA Update] Worker update notice:', err);
+        console.warn('[Update] Worker update notice:', err);
       }
     }
 
-    // Cache-busting navigation: fetches fresh HTML directly without clearing the offline safety net
+    // Direct in-place reload with cache-busting timestamp (both Desktop Electron and Mobile Web)
     setTimeout(() => {
       const target = new URL(window.location.href);
       target.searchParams.set('v', String(Date.now()));
       window.location.replace(target.toString());
-    }, 250);
+    }, 200);
   };
 
   const triggerToast = useCallback(
@@ -858,7 +861,7 @@ export const App: React.FC = () => {
   return (
     <>
       {/* PWA Version Update Banner */}
-      {updateAvailable && !dismissedUpdate && (
+      {updateAvailable && isVersionNewer(updateAvailable, APP_VERSION) && !dismissedUpdate && (
         <aside className="pwa-update-banner" role="alert">
           <div className="pwa-update-content">
             <span className="pwa-update-icon">🚀</span>
@@ -887,7 +890,7 @@ export const App: React.FC = () => {
           <div className="nav-brand">
             <div className="brand-title" style={{ fontSize: '18px', fontWeight: 800, display: 'flex', alignItems: 'center' }}>
               Matrix Mixer <span className="version-pill">v{APP_VERSION}</span>
-              {updateAvailable && (
+              {updateAvailable && isVersionNewer(updateAvailable, APP_VERSION) && (
                 <button
                   className="badge-update-available"
                   onClick={handleForceUpdate}
