@@ -28,8 +28,8 @@ export const MixerConsole: React.FC<Props> = ({
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    // If not in All-view and not holding Shift, convert vertical mouse wheel scroll to horizontal scrolling
-    if (!isAllView && e.deltaY !== 0 && containerRef.current && !e.shiftKey) {
+    // Convert vertical mouse wheel scroll to horizontal scrolling when there is horizontal overflow
+    if (containerRef.current && containerRef.current.scrollWidth > containerRef.current.clientWidth && e.deltaY !== 0 && !e.shiftKey) {
       containerRef.current.scrollLeft += e.deltaY;
     }
   };
