@@ -1,4 +1,4 @@
-const CACHE_NAME = 'matrixmixer-cache-v1.9.8';
+const CACHE_NAME = 'matrixmixer-cache-v1.9.9';
 
 const ASSETS = [
   '/',

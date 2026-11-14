@@ -14,7 +14,7 @@
 
 ## 1. Objective, Scope & Context
 
-This report documents the formal Information Security Management System (ISMS) audit and Statement of Applicability for **MatrixMixer Desktop** (v1.9.8) against the **ISO/IEC 27001:2022** international standard. The scope encompasses the Electron desktop shell, Web Audio DSP pipeline, MIDI hardware controller communications, local JSON preset storage, backup rotation routines, and the private GitHub supply-chain pipeline (`tooh/matrix-mixer-desktop`).
+This report documents the formal Information Security Management System (ISMS) audit and Statement of Applicability for **MatrixMixer Desktop** (v1.9.9) against the **ISO/IEC 27001:2022** international standard. The scope encompasses the Electron desktop shell, Web Audio DSP pipeline, MIDI hardware controller communications, local JSON preset storage, backup rotation routines, and the private GitHub supply-chain pipeline (`tooh/matrix-mixer-desktop`).
 
 ---
 

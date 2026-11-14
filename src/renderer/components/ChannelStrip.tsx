@@ -160,15 +160,121 @@ export const ChannelStrip: React.FC<Props> = ({
   const accent = getChannelAccent(def.id, currentFullName, def.category);
   const defaultLvl = channelDefaultLevel ?? 100;
 
-  const handleLevelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = parseInt(e.target.value, 10);
-    onUpdate({ level: val });
-    onSendMidi(def.levelCC, val, `${currentFullName} Level: ${val} (${levelToDb(val)})`);
-  };
+  // Fader Double-Tap / Double-Click Mobile Support
+  const faderTouchStartRef = React.useRef<{ time: number; x: number; y: number } | null>(null);
+  const faderLastTapRef = React.useRef<{ time: number; x: number; y: number } | null>(null);
+  const lastDoubleTapTimeRef = React.useRef<number>(0);
+  const lastFaderHandledTouchRef = React.useRef<number>(0);
+
+  // Pan Double-Tap / Double-Click Mobile Support
+  const panTouchStartRef = React.useRef<{ time: number; x: number; y: number } | null>(null);
+  const panLastTapRef = React.useRef<{ time: number; x: number; y: number } | null>(null);
+  const panLastDoubleTapTimeRef = React.useRef<number>(0);
+  const lastPanHandledTouchRef = React.useRef<number>(0);
 
   const handleResetLevel = () => {
     onUpdate({ level: defaultLvl });
     onSendMidi(def.levelCC, defaultLvl, `${currentFullName} Level: Reset to ${levelToDb(defaultLvl)}`);
+  };
+
+  const handleResetPan = () => {
+    onUpdate({ pan: 64 });
+    onSendMidi(def.panCC, 64, `${currentFullName} Pan reset to Center`);
+  };
+
+  const handleFaderTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      faderTouchStartRef.current = {
+        time: Date.now(),
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY
+      };
+    }
+  };
+
+  const handleFaderTouchEnd = (e: React.TouchEvent) => {
+    if (!faderTouchStartRef.current || e.changedTouches.length === 0) return;
+    const now = Date.now();
+    if (now - lastFaderHandledTouchRef.current < 40) return;
+    lastFaderHandledTouchRef.current = now;
+
+    const touch = e.changedTouches[0];
+    const { time: startTime, x: startX, y: startY } = faderTouchStartRef.current;
+    faderTouchStartRef.current = null;
+
+    const duration = now - startTime;
+    const dist = Math.hypot(touch.clientX - startX, touch.clientY - startY);
+
+    if (duration < 300 && dist < 22) {
+      const lastTap = faderLastTapRef.current;
+      if (lastTap && (now - lastTap.time) < 400 && (now - lastTap.time) > 40) {
+        const tapDist = Math.hypot(touch.clientX - lastTap.x, touch.clientY - lastTap.y);
+        if (tapDist < 45) {
+          faderLastTapRef.current = null;
+          lastDoubleTapTimeRef.current = now;
+          if (typeof navigator !== 'undefined' && navigator.vibrate) {
+            try { navigator.vibrate(15); } catch {}
+          }
+          handleResetLevel();
+          return;
+        }
+      }
+      faderLastTapRef.current = { time: now, x: touch.clientX, y: touch.clientY };
+    } else {
+      faderLastTapRef.current = null;
+    }
+  };
+
+  const handlePanTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      panTouchStartRef.current = {
+        time: Date.now(),
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY
+      };
+    }
+  };
+
+  const handlePanTouchEnd = (e: React.TouchEvent) => {
+    if (!panTouchStartRef.current || e.changedTouches.length === 0) return;
+    const now = Date.now();
+    if (now - lastPanHandledTouchRef.current < 40) return;
+    lastPanHandledTouchRef.current = now;
+
+    const touch = e.changedTouches[0];
+    const { time: startTime, x: startX, y: startY } = panTouchStartRef.current;
+    panTouchStartRef.current = null;
+
+    const duration = now - startTime;
+    const dist = Math.hypot(touch.clientX - startX, touch.clientY - startY);
+
+    if (duration < 300 && dist < 22) {
+      const lastTap = panLastTapRef.current;
+      if (lastTap && (now - lastTap.time) < 400 && (now - lastTap.time) > 40) {
+        const tapDist = Math.hypot(touch.clientX - lastTap.x, touch.clientY - lastTap.y);
+        if (tapDist < 45) {
+          panLastTapRef.current = null;
+          panLastDoubleTapTimeRef.current = now;
+          if (typeof navigator !== 'undefined' && navigator.vibrate) {
+            try { navigator.vibrate(15); } catch {}
+          }
+          handleResetPan();
+          return;
+        }
+      }
+      panLastTapRef.current = { time: now, x: touch.clientX, y: touch.clientY };
+    } else {
+      panLastTapRef.current = null;
+    }
+  };
+
+  const handleLevelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (Date.now() - lastDoubleTapTimeRef.current < 250) {
+      return;
+    }
+    const val = parseInt(e.target.value, 10);
+    onUpdate({ level: val });
+    onSendMidi(def.levelCC, val, `${currentFullName} Level: ${val} (${levelToDb(val)})`);
   };
 
   const handleTickClick = (e: React.MouseEvent, lvl: number, isZero?: boolean) => {
@@ -188,14 +294,12 @@ export const ChannelStrip: React.FC<Props> = ({
   };
 
   const handlePanChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (Date.now() - panLastDoubleTapTimeRef.current < 250) {
+      return;
+    }
     const val = parseInt(e.target.value, 10);
     onUpdate({ pan: val });
     onSendMidi(def.panCC, val, `${currentFullName} Pan: ${panToText(val)}`);
-  };
-
-  const handleResetPan = () => {
-    onUpdate({ pan: 64 });
-    onSendMidi(def.panCC, 64, `${currentFullName} Pan reset to Center`);
   };
 
   const handleToggleMute = () => {
@@ -260,7 +364,11 @@ export const ChannelStrip: React.FC<Props> = ({
       </div>
 
       {/* Pan Section with Reset Button (Stadium 1.4 Feature) */}
-      <div className="strip-pan-section">
+      <div
+        className="strip-pan-section"
+        onTouchStart={handlePanTouchStart}
+        onTouchEnd={handlePanTouchEnd}
+      >
         <div className="strip-pan-row">
           <span className="pan-label">PAN</span>
           <button className="pan-reset-btn" onClick={handleResetPan} title="Reset to Center (64)">
@@ -273,8 +381,11 @@ export const ChannelStrip: React.FC<Props> = ({
           max="127"
           value={state.pan}
           onChange={handlePanChange}
+          onDoubleClick={handleResetPan}
+          onTouchStart={handlePanTouchStart}
+          onTouchEnd={handlePanTouchEnd}
           className="pan-slider"
-          title={`Pan: ${panToText(state.pan)}`}
+          title={`Pan: ${panToText(state.pan)}\nDouble-click or double-tap to reset to Center`}
         />
         <span className="pan-value-text">{panToText(state.pan)}</span>
       </div>
@@ -298,7 +409,12 @@ export const ChannelStrip: React.FC<Props> = ({
       </div>
 
       {/* Fader Area */}
-      <div className="strip-fader-area">
+      <div
+        className="strip-fader-area"
+        onDoubleClick={handleResetLevel}
+        onTouchStart={handleFaderTouchStart}
+        onTouchEnd={handleFaderTouchEnd}
+      >
         <div className="fader-track-ticks" onDoubleClick={handleResetLevel}>
           <div className="fader-ticks-inner">
             {FADER_TICKS.map((t) => (
@@ -322,8 +438,10 @@ export const ChannelStrip: React.FC<Props> = ({
           value={state.level}
           onChange={handleLevelChange}
           onDoubleClick={handleResetLevel}
+          onTouchStart={handleFaderTouchStart}
+          onTouchEnd={handleFaderTouchEnd}
           className="fader-vertical"
-          title={`Level: ${state.level} (${levelToDb(state.level)})\nDouble-click to reset to ${levelToDb(defaultLvl)}`}
+          title={`Level: ${state.level} (${levelToDb(state.level)})\nDouble-click or double-tap to reset to ${levelToDb(defaultLvl)}`}
         />
       </div>
 

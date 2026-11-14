@@ -1,7 +1,7 @@
 # OWASP & CIS Database & Storage Security Hardening Control Report
 
 * **Application:** MatrixMixer (Web & Desktop)
-* **Version:** v1.9.8 / Desktop 1.9.8
+* **Version:** v1.9.9 / Desktop 1.9.9
 * **Audit Date:** 2026-11-01
 * **Standards / Benchmarks:** 
   - [OWASP Database Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Database_Security_Cheat_Sheet.html)

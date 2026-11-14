@@ -8,7 +8,7 @@ const install = process.argv.includes('--install');
 
 const pkgPath = path.join(__dirname, 'package.json');
 const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-const VERSION = pkg.version || '1.9.8';
+const VERSION = pkg.version || '1.9.9';
 
 function copyFile(src, dest) {
   if (!fs.existsSync(src)) return;

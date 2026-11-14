@@ -939,6 +939,9 @@ body {
   position: relative;
   min-height: calc(var(--fader-length) + 16px);
   padding: 8px 0;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .fader-track-ticks {
@@ -1038,6 +1041,9 @@ body {
   outline: none;
   cursor: pointer;
   touch-action: pan-x;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
   z-index: 2;
 }
 
